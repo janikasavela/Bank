@@ -9,6 +9,7 @@ var korttiRouter = require('./routes/kortti');
 var asiakasRouter = require('./routes/asiakas');
 var tiliRouter = require('./routes/tili');
 var oikeudetRouter = require('./routes/oikeudet');
+var loginRouter = require('./routes/login');
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use('/kortti', korttiRouter);
 app.use('/asiakas', asiakasRouter);
 app.use('/tili', tiliRouter);
 app.use('/oikeudet', oikeudetRouter);
+app.use('/login', loginRouter);
 
 
 module.exports = app;

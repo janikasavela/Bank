@@ -5,6 +5,9 @@ const bcrypt = require('bcryptjs');
 const saltRounds=10;
 
 const kortti = {
+  checkPin_koodi: function(id_kortti, callback) {
+    return db.query('SELECT pin_koodi FROM kortti WHERE id_kortti = ?',[id_kortti], callback); 
+  },
   getById: function(id, callback) {
     return db.query('select * from kortti where id_kortti=?', [id], callback);
   },
