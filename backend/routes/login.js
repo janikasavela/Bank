@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const kortti = require('../models/kortti_model');
-/* const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv'); */ 
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
 router.post('/', 
   function(request, response) {
@@ -20,8 +20,8 @@ router.post('/',
                 if(compareResult) {
                   console.log("succes");
                   response.send(true);
-                  /* const token = generateAccessToken({username:id_kortti})
-                  response.send(token); */ 
+                  //const token = generateAccessToken({username:id_kortti})
+                  //response.send(token); 
                 }
                 else {
                     console.log("wrong pin_koodi");
@@ -45,10 +45,10 @@ router.post('/',
   }
 );
 
-/* function generateAccessToken(username)
+function generateAccessToken(username)
 {
     dotenv.config();
-    return jwt.sign(username, process.env.MY_TOKEN, { expiresIn: '1800s' });
-} */ 
+    return jwt.sign(username, process.env.TOKEN, { expiresIn: '1800s' });
+} 
 
 module.exports=router;
