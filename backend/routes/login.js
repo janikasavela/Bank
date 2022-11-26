@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const kortti = require('../models/kortti_model');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+jwt = require('jsonwebtoken');
+dotenv = require('dotenv');
 
 router.post('/', 
   function(request, response) {
@@ -19,9 +19,9 @@ router.post('/',
               bcrypt.compare(pin_koodi,dbResult[0].pin_koodi, function(err,compareResult) {
                 if(compareResult) {
                   console.log("succes");
-                  response.send(true);
-                  //const token = generateAccessToken({username:id_kortti})
-                  //response.send(token); 
+                  //response.send(true);
+                  const token = generateAccessToken({username:id_kortti})
+                  response.send(token); 
                 }
                 else {
                     console.log("wrong pin_koodi");
