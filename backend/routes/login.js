@@ -10,6 +10,8 @@ router.post('/',
     if(request.body.id_kortti && request.body.pin_koodi){
       const id_kortti = request.body.id_kortti;
       const pin_koodi = request.body.pin_koodi;
+     // dotenv.config();
+     // console.log(process.env.TOKEN)
         kortti.checkPin_koodi(id_kortti, function(dbError, dbResult) {
           if(dbError){
             response.json(dbError.errno);
@@ -19,9 +21,9 @@ router.post('/',
               bcrypt.compare(pin_koodi,dbResult[0].pin_koodi, function(err,compareResult) {
                 if(compareResult) {
                   console.log("succes");
-                  response.send(true);
-                  //const token = generateAccessToken({username:id_kortti})
-                  //response.send(token); 
+                  //response.send(true);
+                  const token = generateAccessToken({username:id_kortti})
+                  response.send(token); 
                 }
                 else {
                     console.log("wrong pin_koodi");
