@@ -23,13 +23,12 @@ function authenticateToken(req, res, next) {
     })
   }
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var korttiRouter = require('./routes/kortti');
 var asiakasRouter = require('./routes/asiakas');
 var tiliRouter = require('./routes/tili');
 var oikeudetRouter = require('./routes/oikeudet');
 var loginRouter = require('./routes/login');
+var tilitapahtumatRouter = require('./routes/tilitapahtumat');
 
 var app = express();
 
@@ -40,13 +39,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/login', loginRouter);
-app.use(authenticateToken);
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use(authenticateToken);
 app.use('/kortti', korttiRouter);
 app.use('/asiakas', asiakasRouter);
 app.use('/tili', tiliRouter);
 app.use('/oikeudet', oikeudetRouter);
+app.use('/tilitapahtumat', tilitapahtumatRouter);
 
 
 module.exports = app;
