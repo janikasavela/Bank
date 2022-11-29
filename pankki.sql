@@ -31,7 +31,7 @@ CREATE TABLE `asiakas` (
   `osoite` varchar(55) NOT NULL,
   `puhnum` char(15) DEFAULT NULL,
   PRIMARY KEY (`id_asiakas`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,6 +68,7 @@ CREATE TABLE `kortti` (
 
 LOCK TABLES `kortti` WRITE;
 /*!40000 ALTER TABLE `kortti` DISABLE KEYS */;
+INSERT INTO `kortti` VALUES ('1010','$2a$10$o47Eq.vWYImDB7yW/bsvd.7S6HJCcn/e5wlYoM7fJeNYjGZltWrD2',2,0),('1011','$2a$10$7eKipJIB8K4.fQ17oexxNeuhHEalJGaMPi3..AdwLdECMI/Pqr/KW',3,0),('1012','$2a$10$V6ywxeAq4igij/AdfG4He.nWxggqRNSDvmNkOOe57.YpfwM3YNZam',1,1),('1013','$2a$10$oE3vQVmr51e4CU5IotnM1ed5mJyvd8mr7M29NjryfdA7Nf8chJ7ma',6,1),('1014','$2a$10$1rm4O/6sCAK6C7z5mDK0N.O5mnxDblDKQIE7B1.A2UlSpf2yNVHaC',7,1),('1015','$2a$10$USbfH0Ydxo5NlMzf2p.mYuIkmeXvEzY644gQ8am8Nwvb4amYfLksS',4,0),('1016','$2a$10$aeO6tjNscuJUJNTQrYglauztRagufNoFZIjvvjxuWkmOzGtAORk2a',5,1);
 /*!40000 ALTER TABLE `kortti` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -87,7 +88,7 @@ CREATE TABLE `oikeudet` (
   KEY `kortti_oikeudet_idx` (`id_kortti`),
   CONSTRAINT `kortti_oikeudet` FOREIGN KEY (`id_kortti`) REFERENCES `kortti` (`id_kortti`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `tilinumero_oikeudet` FOREIGN KEY (`id_tilinumero`) REFERENCES `tili` (`id_tilinumero`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,6 +97,7 @@ CREATE TABLE `oikeudet` (
 
 LOCK TABLES `oikeudet` WRITE;
 /*!40000 ALTER TABLE `oikeudet` DISABLE KEYS */;
+INSERT INTO `oikeudet` VALUES (1,'1010',2),(2,'1011',2),(3,'1012',2),(4,'1012',3),(5,'1013',7),(6,'1014',8),(7,'1014',9),(8,'1013',9),(9,'1015',4),(10,'1016',5),(11,'1016',6);
 /*!40000 ALTER TABLE `oikeudet` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -114,7 +116,7 @@ CREATE TABLE `tili` (
   PRIMARY KEY (`id_tilinumero`,`id_asiakas`),
   KEY `id_asiakas_tili_idx` (`id_asiakas`),
   CONSTRAINT `id_asiakas_tili` FOREIGN KEY (`id_asiakas`) REFERENCES `asiakas` (`id_asiakas`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -123,7 +125,7 @@ CREATE TABLE `tili` (
 
 LOCK TABLES `tili` WRITE;
 /*!40000 ALTER TABLE `tili` DISABLE KEYS */;
-INSERT INTO `tili` VALUES (2,1,800,0),(3,1,0,500),(4,2,2200,0),(5,3,1560,0),(6,3,0,3000),(7,6,1430,0),(8,7,2460,0),(9,7,0,1500),(10,7,0,1500);
+INSERT INTO `tili` VALUES (2,1,800,0),(3,1,0,500),(4,4,1440,0),(5,5,766,0),(6,5,0,500),(7,6,1430,0),(8,7,2460,0),(9,7,0,1500);
 /*!40000 ALTER TABLE `tili` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,7 +148,7 @@ CREATE TABLE `tilitapahtumat` (
   KEY `tilinumero_tilitapahtumat_idx` (`id_tilinumero`),
   CONSTRAINT `kortti_tilitapahtumat` FOREIGN KEY (`id_kortti`) REFERENCES `kortti` (`id_kortti`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `tilinumero_tilitapahtumat` FOREIGN KEY (`id_tilinumero`) REFERENCES `tili` (`id_tilinumero`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -289,4 +291,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-11-16 21:44:27
+-- Dump completed on 2022-11-29 12:20:16
