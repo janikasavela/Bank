@@ -70,6 +70,9 @@ void MainWindow::loginSlot(QNetworkReply *reply)
                 objectKorttiWindow = new KorttiWindow(id_kortti);
                 objectKorttiWindow->setWebToken(response_data);
                 objectKorttiWindow->show();
+                connect(objectKorttiWindow,SIGNAL(timeout()),this,SLOT(timeoutSlot()));
+                //QMainWindow::setEnabled(false);
+                this->hide();
 
         }
 
@@ -77,4 +80,12 @@ void MainWindow::loginSlot(QNetworkReply *reply)
 
     }
 
+}
+
+void MainWindow::timeoutSlot()
+{
+    this->show();
+    ui->lineEditIdKortti->clear();
+    ui->lineEdit_2PinKoodi->clear();
+    ui->labelInfo->setText("Uloskirjautuminen suoritettu");
 }
