@@ -1,6 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "korttiwindow.h"
+#include "myurl.h"
+
+#include <QtNetwork>
+#include <QNetworkAccessManager>
+#include <QJsonDocument>
+
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -15,7 +22,16 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_pushButtonLogin_clicked();
+    void loginSlot (QNetworkReply *reply);
+
 private:
     Ui::MainWindow *ui;
+    KorttiWindow *objectKorttiWindow;
+    QNetworkAccessManager *loginManager;
+    QNetworkReply *reply;
+    QByteArray response_data;
+    QString id_kortti;
 };
 #endif // MAINWINDOW_H

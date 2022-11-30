@@ -1,0 +1,53 @@
+CREATE USER 'group_13'@'localhost' IDENTIFIED WITH mysql_native_password BY 'netpass';
+GRANT ALL on pankki.* to 'group_13'@'localhost';
+
+KORTIT: 
+
+Kortti: 1012
+Asiakas id: 1
+Salasana: pass11
+Credit: 1
+
+Kortti: 1010
+Asiakas id: 2
+Salasana: lapsi1
+Credit: 0
+
+Kortti: 1011
+Asiakas id: 3
+Salasana: lapsi2
+Credit: 0
+
+Kortti: 1013
+Asiakas id: 6
+Salasana: pass01
+Credit: 1
+
+Kortti: 1014
+Asiakas id: 7
+Salasana: pass02
+Credit: 1
+
+Kortti: 1015
+Asiakas id: 4
+Salasana: pass03
+Credit: 0
+
+Kortti: 1016
+Asiakas id: 5
+Salasana: pass04
+Credit: 1
+
+ASIAKKAAT:
+
+Perhe: Jaana Korhonen (id 1) , tytär Aada Korhonen (id 2) , poika Aapo Korhonen (id 3)
+Lapsilla debit kortit joilla käyttöoikeus äidin tilille (tili id 2), äidillä itsellä credit Kortti (credit tili id 3)
+
+Pariskunta: Anette Heikkinen (id 6), puoliso Jarmo Heikkinen (id 7)
+Molemmilla omat debit tilit (Aneten tili id 7 & Jarmon tili id 8) sekä yhteinen credit tili (tili id 9)
+
+Lari Korhonen (id 4) omistaa debit tilin jonka id 4
+
+Maaret Mäkinen (id 5) on sekä credit tili jonka id 5 että debit tili jonka id 6 
+
+
