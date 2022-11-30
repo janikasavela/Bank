@@ -8,7 +8,7 @@ KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
 {
     ui->setupUi(this);
     kortti=id_kortti;
-    ui->labelidkortti->setText(kortti+" (Menu)");
+    ui->labelidkortti->setText(kortti+" (Valikko)");
     ui->stackedWidget->setCurrentIndex(0);      //KorttiWindowin menuWindow
     ui->btnReturn->hide();
 }
@@ -64,7 +64,7 @@ void KorttiWindow::on_btnSiirraRahaa_clicked()
 
 void KorttiWindow::on_btnReturn_clicked()
 {
-    ui->labelidkortti->setText(kortti+" (Menu)");
+    ui->labelidkortti->setText(kortti+" (Valikko)");
     ui->stackedWidget->setCurrentIndex(0);
     ui->btnReturn->hide();
 }
