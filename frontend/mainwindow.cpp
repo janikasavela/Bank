@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete objectKorttiWindow;
+    objectKorttiWindow = nullptr;
 }
 
 
@@ -47,20 +49,32 @@ void MainWindow::loginSlot(QNetworkReply *reply)
    int test=QString::compare(response_data,"false");
     qDebug()<<test;
 
-
-    if(test==0) {
-
-        ui->lineEditIdKortti->clear();
-        ui->lineEdit_2PinKoodi->clear();
-        ui->labelInfo->setText("Tunnus ja pin-koodi eivät täsmää");
-
+    if(response_data.length()==0){
+        ui->labelInfo->setText("Palvelin ei vastaa");
     }
     else {
 
-        objectKorttiWindow = new KorttiWindow(id_kortti);
-        objectKorttiWindow->setWebToken(response_data);
-        objectKorttiWindow->show();
+        if(QString::compare(response_data,"-4078")==0){
+            ui->labelInfo->setText("Virhe tietokanta yhteydessä");
+        }
+        else {
+            if(test==0) {
 
-}
+                ui->lineEditIdKortti->clear();
+                ui->lineEdit_2PinKoodi->clear();
+                ui->labelInfo->setText("Tunnus ja pin-koodi eivät täsmää");
+
+            }
+            else {
+
+                objectKorttiWindow = new KorttiWindow(id_kortti);
+                objectKorttiWindow->setWebToken(response_data);
+                objectKorttiWindow->show();
+
+        }
+
+        }
+
+    }
 
 }
