@@ -125,7 +125,7 @@ CREATE TABLE `tili` (
 
 LOCK TABLES `tili` WRITE;
 /*!40000 ALTER TABLE `tili` DISABLE KEYS */;
-INSERT INTO `tili` VALUES (2,1,800,0),(3,1,0,500),(4,4,1440,0),(5,5,766,0),(6,5,0,500),(7,6,1430,0),(8,7,2460,0),(9,7,0,1500);
+INSERT INTO `tili` VALUES (2,1,0,0),(3,1,0,500),(4,4,1660,0),(5,5,766,0),(6,5,0,500),(7,6,1430,0),(8,7,2460,0),(9,7,0,1500);
 /*!40000 ALTER TABLE `tili` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -139,7 +139,7 @@ DROP TABLE IF EXISTS `tilitapahtumat`;
 CREATE TABLE `tilitapahtumat` (
   `id_tapahtuma` int NOT NULL AUTO_INCREMENT,
   `id_tilinumero` int NOT NULL,
-  `id_kortti` char(4) NOT NULL,
+  `id_kortti` char(4) DEFAULT NULL,
   `tapahtuma_aika` timestamp NOT NULL,
   `tapahtuma` varchar(45) NOT NULL,
   `summa` double NOT NULL,
@@ -148,7 +148,7 @@ CREATE TABLE `tilitapahtumat` (
   KEY `tilinumero_tilitapahtumat_idx` (`id_tilinumero`),
   CONSTRAINT `kortti_tilitapahtumat` FOREIGN KEY (`id_kortti`) REFERENCES `kortti` (`id_kortti`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `tilinumero_tilitapahtumat` FOREIGN KEY (`id_tilinumero`) REFERENCES `tili` (`id_tilinumero`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,6 +157,7 @@ CREATE TABLE `tilitapahtumat` (
 
 LOCK TABLES `tilitapahtumat` WRITE;
 /*!40000 ALTER TABLE `tilitapahtumat` DISABLE KEYS */;
+INSERT INTO `tilitapahtumat` VALUES (2,2,'1012','2022-11-30 08:59:06','nosto',30),(3,2,'1012','2022-11-30 09:15:25','-tilisiirto',200),(5,2,'1012','2022-11-30 09:21:20','nosto',20),(6,2,'1012','2022-11-30 09:24:24','-tilisiirto',10);
 /*!40000 ALTER TABLE `tilitapahtumat` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -173,7 +174,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `credit_nosto`(IN ekatili_id INT, IN summa DOUBLE )
+CREATE DEFINER=`root`@`localhost` PROCEDURE `credit_nosto`(IN kortti CHAR(4), IN ekatili_id INT, IN summa DOUBLE )
 BEGIN
   DECLARE test1 INT DEFAULT 0;
   START TRANSACTION;
@@ -181,7 +182,7 @@ BEGIN
   SET test1=ROW_COUNT();
     IF (test1 > 0) THEN   
       COMMIT;    
-      INSERT INTO tilitapahtumat(id_tilinumero,tapahtuma,summa,tapahtuma_aika) VALUES(ekatili_id,'nosto',summa,NOW());
+      INSERT INTO tilitapahtumat(id_tilinumero,id_kortti,tapahtuma,summa,tapahtuma_aika) VALUES(ekatili_id,kortti,'nosto',summa,NOW());
     ELSE
       ROLLBACK;
   END IF;
@@ -201,18 +202,18 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `credit_tilisiirto`(IN ekatili_id INT, IN tokatili_id INT, IN summa DOUBLE )
+CREATE DEFINER=`root`@`localhost` PROCEDURE `credit_tilisiirto`(IN kortti CHAR(4), IN ekatili_id INT, IN tokatili_id INT, IN summa DOUBLE)
 BEGIN
   DECLARE test1,test2 INT DEFAULT 0;
   START TRANSACTION;
   UPDATE tili SET saldo=saldo-summa WHERE id_tilinumero=ekatili_id AND summa-saldo <= luottoraja;
   SET test1=ROW_COUNT();
-  UPDATE tili SET summa=saldo+summa WHERE id_tilinumero=tokatili_id;
+  UPDATE tili SET saldo=saldo+summa WHERE id_tilinumero=tokatili_id;
   SET test2=ROW_COUNT();
     IF (test1 > 0 AND test2 >0) THEN   
       COMMIT;    
-      INSERT INTO tilitapahtumat(id_tilinumero,tapahtuma,summa,tapahtuma_aika) VALUES(ekatili_id,'-tilisiirto',summa,NOW());
-      INSERT INTO tilitapahtumat(id_tilinumero,tapahtuma,summa,tapahtuma_aika) VALUES(tokatili_id,'+tilisiirto',summa,NOW());
+      INSERT INTO tilitapahtumat(id_kortti,id_tilinumero,tapahtuma,summa,tapahtuma_aika) VALUES(kortti, ekatili_id,'-tilisiirto',summa,NOW());
+      INSERT INTO tilitapahtumat(id_tilinumero,id_kortti,tapahtuma,summa,tapahtuma_aika) VALUES(tokatili_id,kortti,'+tilisiirto',summa,NOW());
     ELSE
       ROLLBACK;
   END IF;
@@ -232,7 +233,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `debit_nosto`(IN ekatili_id INT, IN summa DOUBLE )
+CREATE DEFINER=`root`@`localhost` PROCEDURE `debit_nosto`(IN kortti CHAR(4), IN ekatili_id INT, IN summa DOUBLE )
 BEGIN
   DECLARE test1 INT DEFAULT 0;
   START TRANSACTION;
@@ -240,7 +241,7 @@ BEGIN
   SET test1=ROW_COUNT();
     IF (test1 > 0) THEN
       COMMIT;
-      INSERT INTO tilitapahtumat(id_tilinumero,tapahtuma,summa,tapahtuma_aika) VALUES(ekatili_id,'nosto',summa, NOW());
+      INSERT INTO tilitapahtumat(id_tilinumero,id_kortti,tapahtuma,summa,tapahtuma_aika) VALUES(ekatili_id,kortti,'nosto',summa, NOW());
     ELSE
       ROLLBACK;
   END IF;
@@ -260,7 +261,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `debit_tilisiirto`(IN ekatili_id INT, IN tokatili_id INT, IN summa DOUBLE )
+CREATE DEFINER=`root`@`localhost` PROCEDURE `debit_tilisiirto`(IN kortti CHAR(4), IN ekatili_id INT, IN tokatili_id INT, IN summa DOUBLE )
 BEGIN
   DECLARE test1, test2 INT DEFAULT 0;
   START TRANSACTION;
@@ -270,8 +271,8 @@ BEGIN
   SET test2=ROW_COUNT();
     IF (test1 > 0 AND test2 >0) THEN
       COMMIT;
-      INSERT INTO tilitapahtumat(id_tilinumero,tapahtuma,summa,tapahtuma_aika) VALUES(ekatili_id,'-tilisiirto',summa, NOW());
-      INSERT INTO tilitapahtumat(id_tilinumero,tapahtuma,summa,tapahtuma_aika) VALUES(tokatili_id,'+tilisiirto',summa, NOW());
+      INSERT INTO tilitapahtumat(id_tilinumero,id_kortti,tapahtuma,summa,tapahtuma_aika) VALUES(ekatili_id,kortti,'-tilisiirto',summa, NOW());
+      INSERT INTO tilitapahtumat(id_tilinumero,id_kortti,tapahtuma,summa,tapahtuma_aika) VALUES(tokatili_id,kortti,'+tilisiirto',summa, NOW());
     ELSE
       ROLLBACK;
   END IF;
@@ -291,4 +292,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-11-29 12:20:16
+-- Dump completed on 2022-11-30 11:31:43
