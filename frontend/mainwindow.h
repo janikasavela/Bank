@@ -25,6 +25,7 @@ public:
 private slots:
     void on_pushButtonLogin_clicked();
     void loginSlot (QNetworkReply *reply);
+    void timeoutSlot();
 
 private:
     Ui::MainWindow *ui;
