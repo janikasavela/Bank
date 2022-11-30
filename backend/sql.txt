@@ -50,16 +50,16 @@ Lari Korhonen (id 4) omistaa debit tilin jonka id 4
 
 Maaret Mäkinen (id 5) on sekä credit tili jonka id 5 että debit tili jonka id 6 
 
-Hakee 10 ensimmäistä tilitapahtumaa tileiltä joihin kortilla on oikeus : 
+Hakee 10 ensimmäistä tilitapahtumaa tileiltä joihin kortilla on oikeus ja vaatimusten mukaiset muut tiedot: 
 select  tilitapahtumat.id_tilinumero, tili.saldo as "saldo", concat(asiakas.etunimi," ",asiakas.sukunimi) as "tilin omistaja", tilitapahtumat.tapahtuma, tilitapahtumat.tapahtuma_aika as "päivämäärä & aika", tilitapahtumat.summa as "summa" from tilitapahtumat inner join tili on tilitapahtumat.id_tilinumero=tili.id_tilinumero inner join kortti on kortti.id_asiakas=tili.id_asiakas inner join asiakas on asiakas.id_asiakas=kortti.id_asiakas where kortti.id_kortti='1012' ORDER BY tilitapahtumat.tapahtuma_aika DESC limit 10;
 
 Hakee tilitapahtumat tileiltä joihin kortilla on oikeus: 
 select * from tilitapahtumat where id_tilinumero in (select id_tilinumero from oikeudet where id_kortti='1012');
 
-Hakee tilitapahtumat credit tililtä johon kortti on yhdistetty: 
+Hakee tilitapahtumat credit tililtä johon kortti on yhdistetty ja vaatimusten mukaiset tiedot: 
 select  tilitapahtumat.id_tilinumero, tili.saldo as "saldo", concat(asiakas.etunimi," ",asiakas.sukunimi) as "tilin omistaja", tilitapahtumat.tapahtuma, tilitapahtumat.tapahtuma_aika as "päivämäärä & aika", tilitapahtumat.summa as "summa" from tilitapahtumat inner join tili on tilitapahtumat.id_tilinumero=tili.id_tilinumero inner join asiakas on tili.id_asiakas=asiakas.id_asiakas inner join oikeudet on oikeudet.id_tilinumero=tili.id_tilinumero inner join kortti on kortti.id_kortti=oikeudet.id_kortti where kortti.id_kortti='1012' AND tili.luottoraja >0 ORDER BY tilitapahtumat.tapahtuma_aika DESC;
 
-Hakee tilitapahtumat debit tililtä johon kortti on yhdistetty: 
+Hakee tilitapahtumat debit tililtä johon kortti on yhdistetty ja vaatimusten mukaiset tiedot: 
 select  tilitapahtumat.id_tilinumero, tili.saldo as "saldo", concat(asiakas.etunimi," ",asiakas.sukunimi) as "tilin omistaja", tilitapahtumat.tapahtuma, tilitapahtumat.tapahtuma_aika as "päivämäärä & aika", tilitapahtumat.summa as "summa" from tilitapahtumat inner join tili on tilitapahtumat.id_tilinumero=tili.id_tilinumero inner join asiakas on tili.id_asiakas=asiakas.id_asiakas inner join oikeudet on oikeudet.id_tilinumero=tili.id_tilinumero inner join kortti on kortti.id_kortti=oikeudet.id_kortti where kortti.id_kortti='1012' AND tili.luottoraja=0 ORDER BY tilitapahtumat.tapahtuma_aika DESC;
 
 
