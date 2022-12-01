@@ -68,7 +68,7 @@ void MainWindow::loginSlot(QNetworkReply *reply)
             else {
 
                 objectKorttiWindow = new KorttiWindow(id_kortti);
-                objectKorttiWindow->setWebToken(response_data);
+                objectKorttiWindow->setWebToken("Bearer " + response_data);
                 objectKorttiWindow->show();
                 connect(objectKorttiWindow,SIGNAL(timeout()),this,SLOT(timeoutSlot()));
                 //QMainWindow::setEnabled(false);

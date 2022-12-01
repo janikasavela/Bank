@@ -41,7 +41,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="stackMenu">
     <widget class="QPushButton" name="btnNostaRahaa">
@@ -117,8 +117,33 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="stackSaldo"/>
-   <widget class="QWidget" name="stackTapahtuma"/>
+   <widget class="QWidget" name="stackSaldo">
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>200</y>
+       <width>80</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="stackTapahtuma">
+    <widget class="QTextEdit" name="textTilitapahtumat">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>130</y>
+       <width>561</width>
+       <height>341</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
    <widget class="QWidget" name="stackNosto"/>
    <widget class="QWidget" name="stackSiirto"/>
   </widget>

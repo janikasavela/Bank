@@ -1,6 +1,7 @@
 #include "korttiwindow.h"
 #include "qdebug.h"
 #include "ui_korttiwindow.h"
+#include "tilitapahtumat.h"
 
 KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
     QDialog(parent),
@@ -16,16 +17,26 @@ KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
 KorttiWindow::~KorttiWindow()
 {
     delete ui;
+    delete objectTilitapahtumat;
+    objectTilitapahtumat = nullptr;
 }
 
-const QString &KorttiWindow::getWebToken() const
+const QByteArray &KorttiWindow::getWebToken() const
 {
     return webToken;
 }
 
-void KorttiWindow::setWebToken(const QString &newWebToken)
+void KorttiWindow::setWebToken(const QByteArray &newWebToken)
 {
     webToken = newWebToken;
+}
+
+void KorttiWindow::tulosta(QString a)
+{
+    qDebug()<<"tulosta signaali";
+    QString tulosta=a;
+    ui->textTilitapahtumat->setEnabled(false);
+    ui->textTilitapahtumat->setText(tulosta);
 }
 
 void KorttiWindow::on_btnTilitapahtumat_clicked()
@@ -33,8 +44,19 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
     ui->labelidkortti->setText(kortti+" (Tilitapahtumat)");
     ui->stackedWidget->setCurrentIndex(2);
     ui->btnReturn->show();
-    QString wb=this->getWebToken();
+    QByteArray wb=this->getWebToken();
     qDebug()<<wb;
+
+    objectTilitapahtumat = new Tilitapahtumat(kortti);
+    connect(this,SIGNAL(tilitapahtumat(QByteArray)),
+            objectTilitapahtumat, SLOT(tilitapahtumat_clicked(QByteArray)) );
+    //laita kommentiksi jos paska
+    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QString)),
+            this, SLOT(tulosta(QString)), Qt::DirectConnection);
+
+   emit tilitapahtumat(wb);
+    qDebug()<<"tili signal";
+
 }
 
 
