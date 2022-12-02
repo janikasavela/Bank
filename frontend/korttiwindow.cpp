@@ -26,7 +26,7 @@ KorttiWindow::~KorttiWindow()
 }
 
 const QByteArray &KorttiWindow::getWebToken() const
-{   //tätä voi kutsua jos tarvii johonkin uuteen tauluun saada sen webtokenin. vielä ei olla tarvittu tätä mihinkään..
+{
     return webToken;
 }
 
