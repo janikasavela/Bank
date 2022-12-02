@@ -20,24 +20,18 @@ public:
     void setWebToken(const QByteArray &newWebToken);
 
 signals:
-    void timeout();
+    void timeout(); //yhdistety uloskirjautumisen slottiin
     void tilitapahtumat(QByteArray);
 
 public slots:
-    //laita kommentiksi jos paska
-    void tulosta(QString);
+    void tulosta_Tilitapahtumat(QString);
 
 private slots:
     void on_btnTilitapahtumat_clicked();
-
     void on_btnSaldo_clicked();
-
     void on_btnNostaRahaa_clicked();
-
     void on_btnSiirraRahaa_clicked();
-
     void on_btnReturn_clicked();
-
     void on_btnLogout_clicked();
 
 private:

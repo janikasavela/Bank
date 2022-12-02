@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "myurl.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -34,7 +35,6 @@ void MainWindow::on_pushButtonLogin_clicked()
 
     reply = loginManager->post(request, QJsonDocument(jsonObj).toJson());
 
-
 }
 
 void MainWindow::loginSlot(QNetworkReply *reply)
@@ -43,10 +43,7 @@ void MainWindow::loginSlot(QNetworkReply *reply)
     response_data=reply->readAll();
     qDebug()<<response_data;
 
-    /* if lauseen voi tehdä kahdella tapaa. toimis myös näin, if(response_data.length() > 5) ja perään sitten mitä tehdään jos token toimii, eli
-     * päittäin nuo if/else lohkojen sisällöt. Tässä siis verrataan pituutta false sanan pituuteen joka palautuu vääristä tunnareista */
-
-   int test=QString::compare(response_data,"false");
+   int test=QString::compare(response_data,"false"); //compare funktio palauttaa 0 jos vertailu tosi, muuten -1.
     qDebug()<<test;
 
     if(response_data.length()==0){
@@ -67,8 +64,8 @@ void MainWindow::loginSlot(QNetworkReply *reply)
             }
             else {
 
-                objectKorttiWindow = new KorttiWindow(id_kortti);
-                objectKorttiWindow->setWebToken("Bearer " + response_data);
+                objectKorttiWindow = new KorttiWindow(id_kortti); //jos sisäänkirjautuminen ok, luodaan koosteyhteys
+                objectKorttiWindow->setWebToken("Bearer " + response_data); //lähetetään webtoken korttiwindowille
                 objectKorttiWindow->show();
                 connect(objectKorttiWindow,SIGNAL(timeout()),this,SLOT(timeoutSlot()));
                 //QMainWindow::setEnabled(false);

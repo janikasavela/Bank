@@ -6,17 +6,15 @@
 #include <QtNetwork>
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
-#include "myurl.h"
 
 class Tilitapahtumat : public QObject
 {
     Q_OBJECT
 public:
-    explicit Tilitapahtumat(QString id_kortti,QObject *parent = nullptr);
+explicit Tilitapahtumat(QString id_kortti,QObject *parent = nullptr);
 
 signals:
-    void tilitapahtumat_nayta(QString);
-    //laita kommentteihin jos paska
+void tilitapahtumat_nayta(QString);
 
 protected slots:
 void tilitapahtumatSlot (QNetworkReply *reply);
@@ -30,6 +28,9 @@ private:
 QNetworkAccessManager *tilitapahtumaManager;
 QNetworkReply *reply;
 QByteArray response_data;
+QString tapahtumat;
+QString tilinOmistaja;
+QString saldo;
 
 };
 

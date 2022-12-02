@@ -4,7 +4,7 @@
 Tilitapahtumat::Tilitapahtumat(QString id_kortti,QObject *parent)
     : QObject{parent}
 {
-    kortti=id_kortti;
+    kortti=id_kortti; //alustetaan käytettävä kortti heti samalla kun luodaan koosteyhteys
 }
 
 void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
@@ -15,24 +15,29 @@ void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
      QByteArray response_data=reply->readAll();
         QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
         QJsonArray json_array = json_doc.array();
-        QString tapahtuma;
+
+    //siirretään haetut tiedot muuttujiin
         foreach (const QJsonValue &value, json_array) {
             QJsonObject json_obj = value.toObject();
-            tapahtuma+=QString::number(json_obj["id_tilinumero"].toInt())+","+QString::number(json_obj["saldo"].toInt())+","+json_obj["tilin omistaja"].toString()+","+json_obj["tapahtuma"].toString()+","+json_obj["p\xC3\xA4iv\xC3\xA4m\xC3\xA4\xC3\xA4r\xC3\xA4 & aika"].toString()+","+QString::number(json_obj["summa"].toInt())+"\r";
+            tilinOmistaja=json_obj["tilin omistaja"].toString();
+            saldo=QString::number(json_obj["saldo"].toInt());
+            tapahtumat+=QString::number(json_obj["id_tilinumero"].toInt())+","+QString::number(json_obj["saldo"].toInt())+","+json_obj["tilin omistaja"].toString()+","+json_obj["tapahtuma"].toString()+","+json_obj["p\xC3\xA4iv\xC3\xA4m\xC3\xA4\xC3\xA4r\xC3\xA4 & aika"].toString()+","+QString::number(json_obj["summa"].toInt())+"\r";
         }
 
-        qDebug()<<tapahtuma;
+        qDebug()<<tilinOmistaja;
+        qDebug()<<saldo;
+        qDebug()<<tapahtumat;
         qDebug()<<"lahetan nayta signal";
-        emit tilitapahtumat_nayta(tapahtuma);
+        emit tilitapahtumat_nayta(tapahtumat); //lähetetään haetut tiedot tilitapahtumien tulostus slottiin korttiwindowille.
 
-        // reply->deleteLater();
-     //    tapahtumamanager->deleteLater();
+        reply->deleteLater();
+        tilitapahtumaManager->deleteLater();
 }
 
 void Tilitapahtumat::tilitapahtumat_clicked(QByteArray webToken)
 {
    qDebug()<<"vastaanotettiin tilit signal";
-   wb=webToken;
+   wb=webToken; //alustetaan webtoken
    qDebug()<<wb;
 
 

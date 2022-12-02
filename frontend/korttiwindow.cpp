@@ -10,7 +10,7 @@ KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
     ui->setupUi(this);
     kortti=id_kortti;
     ui->labelidkortti->setText(kortti+" (Valikko)");
-    ui->stackedWidget->setCurrentIndex(0);      //KorttiWindowin menuWindow
+    ui->stackedWidget->setCurrentIndex(0);      //KorttiWindowin valikko
     ui->btnReturn->hide();
 }
 
@@ -22,7 +22,7 @@ KorttiWindow::~KorttiWindow()
 }
 
 const QByteArray &KorttiWindow::getWebToken() const
-{
+{   //tätä voi kutsua jos tarvii johonkin uuteen tauluun saada sen webtokenin. vielä ei olla tarvittu tätä mihinkään..
     return webToken;
 }
 
@@ -31,9 +31,10 @@ void KorttiWindow::setWebToken(const QByteArray &newWebToken)
     webToken = newWebToken;
 }
 
-void KorttiWindow::tulosta(QString a)
+void KorttiWindow::tulosta_Tilitapahtumat(QString a)
 {
-    qDebug()<<"tulosta signaali";
+    //tähän slottiin lähetetään kaikki tilitapahtumien tulostustiedot.
+    qDebug()<<"tulosta signaali vastaanotettu tapahtumista";
     QString tulosta=a;
     ui->textTilitapahtumat->setEnabled(false);
     ui->textTilitapahtumat->setText(tulosta);
@@ -44,18 +45,20 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
     ui->labelidkortti->setText(kortti+" (Tilitapahtumat)");
     ui->stackedWidget->setCurrentIndex(2);
     ui->btnReturn->show();
-    QByteArray wb=this->getWebToken();
-    qDebug()<<wb;
 
-    objectTilitapahtumat = new Tilitapahtumat(kortti);
-    connect(this,SIGNAL(tilitapahtumat(QByteArray)),
+    qDebug()<<webToken;
+
+    objectTilitapahtumat = new Tilitapahtumat(kortti); //luodaan koosteyhteys tilitapahtumat luokkaan
+    connect(this,SIGNAL(tilitapahtumat(QByteArray)),   //yhdistetään signaali tästä tilitapahtumien alustus slottiin, signaalin mukana webtoken
             objectTilitapahtumat, SLOT(tilitapahtumat_clicked(QByteArray)) );
-    //laita kommentiksi jos paska
-    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QString)),
-            this, SLOT(tulosta(QString)), Qt::DirectConnection);
 
-   emit tilitapahtumat(wb);
-    qDebug()<<"tili signal";
+    //yhdistetään signaali jonka mukana viedään tiedot tilitapahtumista tänne korttiwindowin tilitapahtumien tulostus slottiin
+    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QString)),
+            this, SLOT(tulosta_Tilitapahtumat(QString)), Qt::DirectConnection);
+
+    //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
+    emit tilitapahtumat(webToken);
+    qDebug()<<"tilitapahtumat signal lähetetty";
 
 }
 
