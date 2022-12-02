@@ -6,6 +6,7 @@
 #include <QtNetwork>
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
+#include <QStringList>
 
 class Tilitapahtumat : public QObject
 {
@@ -14,7 +15,7 @@ public:
 explicit Tilitapahtumat(QString id_kortti,QObject *parent = nullptr);
 
 signals:
-void tilitapahtumat_nayta(QString,QString,QString,QString);
+void tilitapahtumat_nayta(QStringList,QString,QString,QString);
 
 protected slots:
 void tilitapahtumatSlot (QNetworkReply *reply);

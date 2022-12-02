@@ -1,5 +1,7 @@
+
 #include "tilitapahtumat.h"
 #include "myurl.h"
+#include <QStringList>
 
 Tilitapahtumat::Tilitapahtumat(QString id_kortti,QObject *parent)
     : QObject{parent}
@@ -22,14 +24,14 @@ void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
             tilinOmistaja=json_obj["tilin omistaja"].toString();
             saldo=QString::number(json_obj["saldo"].toInt());
             tilinumero=QString::number(json_obj["id_tilinumero"].toInt());
-            tapahtumat+=json_obj["tapahtuma"].toString()+","+json_obj["p\xC3\xA4iv\xC3\xA4m\xC3\xA4\xC3\xA4r\xC3\xA4 & aika"].toString()+","+QString::number(json_obj["summa"].toInt())+"\r";
+            tapahtumat+=json_obj["tapahtuma"].toString()+","+json_obj["p\xC3\xA4iv\xC3\xA4m\xC3\xA4\xC3\xA4r\xC3\xA4 & aika"].toString()+","+QString::number(json_obj["summa"].toInt())+"\r"+"-++";
         }
 
-        qDebug()<<tilinOmistaja;
-        qDebug()<<saldo;
-        qDebug()<<tapahtumat;
+        //tapahtumat string muutetaan listaksi eli taulukoksi
+        QStringList lista = tapahtumat.split("-++");
+
         qDebug()<<"lahetan nayta signal";
-        emit tilitapahtumat_nayta(tapahtumat,tilinOmistaja,saldo,tilinumero); //lähetetään haetut tiedot tilitapahtumien tulostus slottiin korttiwindowille.
+        emit tilitapahtumat_nayta(lista,tilinOmistaja,saldo,tilinumero); //lähetetään haetut tiedot tilitapahtumien tulostus slottiin korttiwindowille.
 
         reply->deleteLater();
         tilitapahtumaManager->deleteLater();

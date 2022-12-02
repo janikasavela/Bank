@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "tilitapahtumat.h"
+#include <QStringList>
 
 namespace Ui {
 class KorttiWindow;
@@ -24,7 +25,7 @@ signals:
     void tilitapahtumat(QByteArray);
 
 public slots:
-    void tulosta_Tilitapahtumat(QString,QString,QString,QString);
+    void tulosta_Tilitapahtumat(QStringList,QString,QString,QString);
 
 private slots:
     void on_btnTilitapahtumat_clicked();
@@ -39,6 +40,7 @@ private:
     QByteArray webToken;
     QString kortti;
     Tilitapahtumat *objectTilitapahtumat;
+    QString alustaSivut(QStringList, int, int);
 };
 
 #endif // KORTTIWINDOW_H
