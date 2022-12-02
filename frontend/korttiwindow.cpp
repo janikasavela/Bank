@@ -101,3 +101,83 @@ void KorttiWindow::on_btnLogout_clicked()
     emit timeout();
     this->close();
 }
+
+void KorttiWindow::tilitSlot(QNetworkReply *reply)
+{
+   //Haetaan kaikki tilit johon kortin haltijalla on oikeus
+
+   QByteArray response_data=reply->readAll();
+   QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
+   QJsonArray json_array = json_doc.array();
+   int kerrat=0;
+
+  //siirretään haetut tiedot QStringListiin
+      foreach (const QJsonValue &value, json_array) {
+          QJsonObject json_obj = value.toObject();
+          luotto+=QString::number(json_obj["luottoraja"].toInt());
+          saldo+=QString::number(json_obj["saldo"].toInt());
+          tilinumero+=QString::number(json_obj["id_tilinumero"].toInt());
+          kerrat+=1;    //lasketaan tilien määrä
+      }
+
+      if(kerrat>1){
+          qDebug()<<"useampi tili löydetty";
+      }
+      else{
+          qDebug()<<"yksi tili löydetty";
+      }
+      if(kerrat==1){
+          if(luotto[0]=="0"){
+              ui->labelActiveTili->setText("DEBIT Tili:");
+          ui->comboTili->addItem(tilinumero[0]);
+          ui->comboTili->setDisabled(1);
+          aTili=ui->comboTili->itemText(0);
+          }
+          else{
+              ui->labelActiveTili->setText("CREDIT Tili:");
+              ui->comboTili->addItem(tilinumero[0]);
+              ui->comboTili->setDisabled(1);
+              aTili=ui->comboTili->itemText(0);
+          }
+          }
+
+
+      else{
+          ui->comboTili->addItem("VALITSE TILI");
+          ui->labelActiveTili->setText("Valitse Tili");
+          ui->stackedWidget->setDisabled(1);
+          for(int i= 0; i < kerrat; i++){
+          if(luotto[i]==0){
+          ui->comboTili->addItem(tilinumero[i]);
+      }
+          else{
+              ui->comboTili->addItem(tilinumero[i]);
+          }}}
+}
+
+void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehdään valinta
+{
+    //Poistetaan väliaikainen arvo (varmaan parempikin tapa olemassa mutta tämä toimii tällä hetkellä)
+    if(ui->comboTili->itemText(0)==("VALITSE TILI")){
+        ui->comboTili->removeItem(0);
+        index-=1;
+        if(index<0){index=0;}
+        aTili=ui->comboTili->itemText(index);
+        qDebug()<<"aktiivinen tili: "+aTili;
+        ui->stackedWidget->setEnabled(1);
+    }
+    else{
+    aTili=ui->comboTili->itemText(index);
+    qDebug()<<"aktiivinen tili: "+aTili;
+    }
+
+    //Tarkistetaan onko valittu tili Credit vai Debit
+
+    if(luotto[index]=="0"){
+        ui->labelActiveTili->setText("CREDIT Tili:");
+    }
+    else{
+        ui->labelActiveTili->setText("DEBIT Tili:");
+    }
+}
+

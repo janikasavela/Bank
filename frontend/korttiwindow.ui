@@ -41,7 +41,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="stackMenu">
     <widget class="QPushButton" name="btnNostaRahaa">
@@ -180,10 +180,35 @@
     <string>Kirjaudu ulos</string>
    </property>
   </widget>
+  <widget class="QComboBox" name="comboTili">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>30</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelActiveTili">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>10</y>
+     <width>111</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Tili:</string>
+   </property>
+  </widget>
   <zorder>stackedWidget</zorder>
   <zorder>labelidkortti</zorder>
   <zorder>btnReturn</zorder>
   <zorder>btnLogout</zorder>
+  <zorder>comboTili</zorder>
+  <zorder>labelActiveTili</zorder>
  </widget>
  <resources/>
  <connections/>
