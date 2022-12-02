@@ -14,6 +14,21 @@ router.get('/',
         })
     });
 
+    router.get('/checkTilit/:id?', 
+    function(request, response) {
+          tili.checkTilit(request.params.id, function(dbError, dbResult) {
+            if(dbError){
+              response.json(dbError.errno);
+            }
+            else{
+              console.log(dbResult);
+              response.json(dbResult);
+            }
+            }
+          );
+        }
+  );
+
 router.get('/:id?',
     function (request, response) {
         tili.getById(request.params.id, function (err, dbResult) {

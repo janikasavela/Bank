@@ -68,7 +68,17 @@ void MainWindow::loginSlot(QNetworkReply *reply)
                 objectKorttiWindow->setWebToken("Bearer " + response_data); //lähetetään webtoken korttiwindowille
                 objectKorttiWindow->show();
                 connect(objectKorttiWindow,SIGNAL(timeout()),this,SLOT(timeoutSlot()));
-                //QMainWindow::setEnabled(false);
+
+                //Haetaan kaikki tilit joihin kortin haltijalla on oikeus
+
+                QString site_url=MyUrl::getBaseUrl()+"/tili/checkTilit/"+id_kortti;
+                QNetworkRequest request((site_url));
+                //WEBTOKEN ALKU
+                request.setRawHeader(QByteArray("Authorization"),(objectKorttiWindow->getWebToken()));
+                //WEBTOKEN LOPPU
+                loginManager = new QNetworkAccessManager(this);
+                connect(loginManager, SIGNAL(finished (QNetworkReply*)), objectKorttiWindow, SLOT(tilitSlot(QNetworkReply*)));
+                reply = loginManager->get(request);
                 this->hide();
 
         }
