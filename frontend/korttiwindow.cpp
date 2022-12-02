@@ -31,13 +31,14 @@ void KorttiWindow::setWebToken(const QByteArray &newWebToken)
     webToken = newWebToken;
 }
 
-void KorttiWindow::tulosta_Tilitapahtumat(QString a)
+void KorttiWindow::tulosta_Tilitapahtumat(QString tapahtumat,QString omistaja,QString saldo,QString tilinumero)
 {
     //tähän slottiin lähetetään kaikki tilitapahtumien tulostustiedot.
     qDebug()<<"tulosta signaali vastaanotettu tapahtumista";
-    QString tulosta=a;
+
     ui->textTilitapahtumat->setEnabled(false);
-    ui->textTilitapahtumat->setText(tulosta);
+    ui->textTilitapahtumat->setText(tapahtumat);
+    ui->label_tilitapahtumat->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+tilinumero);
 }
 
 void KorttiWindow::on_btnTilitapahtumat_clicked()
@@ -53,8 +54,8 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
             objectTilitapahtumat, SLOT(tilitapahtumat_clicked(QByteArray)) );
 
     //yhdistetään signaali jonka mukana viedään tiedot tilitapahtumista tänne korttiwindowin tilitapahtumien tulostus slottiin
-    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QString)),
-            this, SLOT(tulosta_Tilitapahtumat(QString)), Qt::DirectConnection);
+    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QString,QString,QString,QString)),
+            this, SLOT(tulosta_Tilitapahtumat(QString,QString,QString,QString)), Qt::DirectConnection);
 
     //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
     emit tilitapahtumat(webToken);

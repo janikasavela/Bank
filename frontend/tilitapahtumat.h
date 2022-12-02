@@ -14,7 +14,7 @@ public:
 explicit Tilitapahtumat(QString id_kortti,QObject *parent = nullptr);
 
 signals:
-void tilitapahtumat_nayta(QString);
+void tilitapahtumat_nayta(QString,QString,QString,QString);
 
 protected slots:
 void tilitapahtumatSlot (QNetworkReply *reply);
@@ -31,6 +31,7 @@ QByteArray response_data;
 QString tapahtumat;
 QString tilinOmistaja;
 QString saldo;
+QString tilinumero;
 
 };
 

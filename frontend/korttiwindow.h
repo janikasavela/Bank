@@ -24,7 +24,7 @@ signals:
     void tilitapahtumat(QByteArray);
 
 public slots:
-    void tulosta_Tilitapahtumat(QString);
+    void tulosta_Tilitapahtumat(QString,QString,QString,QString);
 
 private slots:
     void on_btnTilitapahtumat_clicked();
