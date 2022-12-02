@@ -19,7 +19,7 @@
      <x>40</x>
      <y>30</y>
      <width>651</width>
-     <height>111</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -41,7 +41,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="stackMenu">
     <widget class="QPushButton" name="btnNostaRahaa">
@@ -118,7 +118,36 @@
     </widget>
    </widget>
    <widget class="QWidget" name="stackSaldo"/>
-   <widget class="QWidget" name="stackTapahtuma"/>
+   <widget class="QWidget" name="stackTapahtuma">
+    <widget class="QTextEdit" name="textTilitapahtumat">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>130</y>
+       <width>561</width>
+       <height>341</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_tilitapahtumat">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>80</y>
+       <width>651</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>15</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+   </widget>
    <widget class="QWidget" name="stackNosto"/>
    <widget class="QWidget" name="stackSiirto"/>
   </widget>

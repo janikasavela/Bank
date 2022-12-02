@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include "korttiwindow.h"
-#include "myurl.h"
 
 #include <QtNetwork>
 #include <QNetworkAccessManager>
@@ -25,7 +24,7 @@ public:
 private slots:
     void on_pushButtonLogin_clicked();
     void loginSlot (QNetworkReply *reply);
-    void timeoutSlot();
+    void timeoutSlot(); //uloskirjautuminen
 
 private:
     Ui::MainWindow *ui;

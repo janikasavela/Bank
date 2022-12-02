@@ -2,6 +2,7 @@
 #define KORTTIWINDOW_H
 
 #include <QDialog>
+#include "tilitapahtumat.h"
 
 namespace Ui {
 class KorttiWindow;
@@ -15,29 +16,29 @@ public:
     explicit KorttiWindow(QString id_kortti,QWidget *parent = nullptr);
     ~KorttiWindow();
 
-    const QString &getWebToken() const;
-    void setWebToken(const QString &newWebToken);
+    const QByteArray &getWebToken() const;
+    void setWebToken(const QByteArray &newWebToken);
 
 signals:
-    void timeout();
+    void timeout(); //yhdistety uloskirjautumisen slottiin
+    void tilitapahtumat(QByteArray);
+
+public slots:
+    void tulosta_Tilitapahtumat(QString,QString,QString,QString);
 
 private slots:
     void on_btnTilitapahtumat_clicked();
-
     void on_btnSaldo_clicked();
-
     void on_btnNostaRahaa_clicked();
-
     void on_btnSiirraRahaa_clicked();
-
     void on_btnReturn_clicked();
-
     void on_btnLogout_clicked();
 
 private:
     Ui::KorttiWindow *ui;
-    QString webToken;
+    QByteArray webToken;
     QString kortti;
+    Tilitapahtumat *objectTilitapahtumat;
 };
 
 #endif // KORTTIWINDOW_H
