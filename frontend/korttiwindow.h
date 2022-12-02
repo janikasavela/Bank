@@ -35,12 +35,17 @@ private slots:
     void on_btnReturn_clicked();
     void on_btnLogout_clicked();
 
+    void on_btn_uudemmat_clicked();
+
+    void on_btn_vanhemmat_clicked();
+
 private:
     Ui::KorttiWindow *ui;
     QByteArray webToken;
     QString kortti;
     Tilitapahtumat *objectTilitapahtumat;
-    QString alustaSivut(QStringList, int, int);
+    int max, i;
+    QStringList uusi_lista;
 };
 
 #endif // KORTTIWINDOW_H
