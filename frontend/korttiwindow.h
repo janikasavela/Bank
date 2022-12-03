@@ -24,10 +24,10 @@ public:
 
 signals:
     void timeout(); //yhdistety uloskirjautumisen slottiin
-    void tilitapahtumat(QByteArray);
+    void tilitapahtumat(QByteArray,QString);
 
 public slots:
-    void tulosta_Tilitapahtumat(QString,QString,QString,QString);
+    void tulosta_Tilitapahtumat(QStringList,QString,QString,QString);
 
 private slots:
     void on_btnTilitapahtumat_clicked();
@@ -37,8 +37,9 @@ private slots:
     void on_btnReturn_clicked();
     void on_btnLogout_clicked();
     void tilitSlot(QNetworkReply *reply);
-
     void on_comboTili_activated(int index);
+    void on_btn_uudemmat_clicked();
+    void on_btn_vanhemmat_clicked();
 
 private:
     Ui::KorttiWindow *ui;
@@ -47,8 +48,9 @@ private:
     QNetworkReply *reply;
     QByteArray response_data;
     Tilitapahtumat *objectTilitapahtumat;
-    QStringList tilinumero, saldo, luotto;
+    QStringList tilinumero, saldo, luotto, uusi_lista;
     QString aTili;
+    int max, i;
 };
 
 #endif // KORTTIWINDOW_H

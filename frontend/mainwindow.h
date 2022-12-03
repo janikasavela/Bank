@@ -33,6 +33,5 @@ private:
     QNetworkReply *reply;
     QByteArray response_data;
     QString id_kortti;
-    int tilinumero;
 };
 #endif // MAINWINDOW_H

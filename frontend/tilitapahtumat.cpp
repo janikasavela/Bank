@@ -1,5 +1,7 @@
+
 #include "tilitapahtumat.h"
 #include "myurl.h"
+#include <QStringList>
 
 Tilitapahtumat::Tilitapahtumat(QString id_kortti,QObject *parent)
     : QObject{parent}
@@ -21,13 +23,9 @@ void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
             QJsonObject json_obj = value.toObject();
             tilinOmistaja=json_obj["tilin omistaja"].toString();
             saldo=QString::number(json_obj["saldo"].toInt());
-            tilinumero=QString::number(json_obj["id_tilinumero"].toInt());
             tapahtumat+=json_obj["tapahtuma"].toString()+","+json_obj["p\xC3\xA4iv\xC3\xA4m\xC3\xA4\xC3\xA4r\xC3\xA4 & aika"].toString()+","+QString::number(json_obj["summa"].toInt())+"\r";
         }
 
-        qDebug()<<tilinOmistaja;
-        qDebug()<<saldo;
-        qDebug()<<tapahtumat;
         qDebug()<<"lahetan nayta signal";
         emit tilitapahtumat_nayta(tapahtumat,tilinOmistaja,saldo,tilinumero); //lähetetään haetut tiedot tilitapahtumien tulostus slottiin korttiwindowille.
 
@@ -35,14 +33,14 @@ void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
         tilitapahtumaManager->deleteLater();
 }
 
-void Tilitapahtumat::tilitapahtumat_clicked(QByteArray webToken)
+void Tilitapahtumat::tilitapahtumat_clicked(QByteArray webToken, QString tili)
 {
    qDebug()<<"vastaanotettiin tilit signal";
    wb=webToken; //alustetaan webtoken
    qDebug()<<wb;
 
-
-   QString site_url=MyUrl::getBaseUrl()+"/selaa_tilitapahtumia/"+kortti;
+   tilinumero=tili;
+   QString site_url=MyUrl::getBaseUrl()+"/selaa_tilitapahtumia/"+tilinumero;
    QNetworkRequest request((site_url));
    //WEBTOKEN ALKU
    QByteArray myToken=wb;

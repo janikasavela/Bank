@@ -12,6 +12,8 @@ KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
     ui->labelidkortti->setText(kortti+" (Valikko)");
     ui->stackedWidget->setCurrentIndex(0);      //KorttiWindowin valikko
     ui->btnReturn->hide();
+    max = 10;
+    i = 0;
 }
 
 KorttiWindow::~KorttiWindow()
@@ -22,7 +24,7 @@ KorttiWindow::~KorttiWindow()
 }
 
 const QByteArray &KorttiWindow::getWebToken() const
-{   //tätä voi kutsua jos tarvii johonkin uuteen tauluun saada sen webtokenin. vielä ei olla tarvittu tätä mihinkään..
+{
     return webToken;
 }
 
@@ -31,13 +33,25 @@ void KorttiWindow::setWebToken(const QByteArray &newWebToken)
     webToken = newWebToken;
 }
 
-void KorttiWindow::tulosta_Tilitapahtumat(QString tapahtumat,QString omistaja,QString saldo,QString tilinumero)
+void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QString saldo,QString tilinumero)
 {
     //tähän slottiin lähetetään kaikki tilitapahtumien tulostustiedot.
     qDebug()<<"tulosta signaali vastaanotettu tapahtumista";
+    uusi_lista=lista;
+
+    QString tulostus="";
+
+    if (uusi_lista.length()>i && uusi_lista.length()>max) //tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
+        for (int x=i; x<max; x++){              //muuten tulee error
+            tulostus+=uusi_lista[x];
+      }
+    else {
+        tulostus="Ei aikaisempia tilitapahtumia";
+    }
+
+    ui->textTilitapahtumat->setText(tulostus);
 
     ui->textTilitapahtumat->setEnabled(false);
-    ui->textTilitapahtumat->setText(tapahtumat);
     ui->label_tilitapahtumat->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+tilinumero);
 }
 
@@ -50,15 +64,15 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
     qDebug()<<webToken;
 
     objectTilitapahtumat = new Tilitapahtumat(kortti); //luodaan koosteyhteys tilitapahtumat luokkaan
-    connect(this,SIGNAL(tilitapahtumat(QByteArray)),   //yhdistetään signaali tästä tilitapahtumien alustus slottiin, signaalin mukana webtoken
-            objectTilitapahtumat, SLOT(tilitapahtumat_clicked(QByteArray)) );
+    connect(this,SIGNAL(tilitapahtumat(QByteArray,QString)),   //yhdistetään signaali tästä tilitapahtumien alustus slottiin, signaalin mukana webtoken
+            objectTilitapahtumat, SLOT(tilitapahtumat_clicked(QByteArray,QString)) );
 
     //yhdistetään signaali jonka mukana viedään tiedot tilitapahtumista tänne korttiwindowin tilitapahtumien tulostus slottiin
-    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QString,QString,QString,QString)),
-            this, SLOT(tulosta_Tilitapahtumat(QString,QString,QString,QString)), Qt::DirectConnection);
+    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QStringList,QString,QString,QString)),
+            this, SLOT(tulosta_Tilitapahtumat(QStringList,QString,QString,QString)), Qt::DirectConnection);
 
     //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
-    emit tilitapahtumat(webToken);
+    emit tilitapahtumat(webToken,aTili);
     qDebug()<<"tilitapahtumat signal lähetetty";
 
 }
@@ -93,6 +107,7 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->labelidkortti->setText(kortti+" (Valikko)");
     ui->stackedWidget->setCurrentIndex(0);
     ui->btnReturn->hide();
+    ui->textTilitapahtumat->clear();
 }
 
 void KorttiWindow::on_btnLogout_clicked()
@@ -174,10 +189,56 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehd�
     //Tarkistetaan onko valittu tili Credit vai Debit
 
     if(luotto[index]=="0"){
-        ui->labelActiveTili->setText("CREDIT Tili:");
-    }
-    else{
         ui->labelActiveTili->setText("DEBIT Tili:");
     }
+    else{
+        ui->labelActiveTili->setText("CREDIT Tili:");
+    }
+}
+
+
+void KorttiWindow::on_btn_uudemmat_clicked() //tilitapahtumian < nuoli
+{
+    ui->btn_vanhemmat->setEnabled(true);
+    max -=10;
+    i-=10;
+
+    if (max == 10 && i == 0) {
+        ui->btn_uudemmat->setEnabled(false); }
+
+    QString tulostus="";
+
+    if (uusi_lista.length()>i && uusi_lista.length()>max) //tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
+        for (int x=i; x<max; x++){              //muuten tulee error
+            tulostus+=uusi_lista[x];
+      }
+    else {
+        tulostus="Ei aikaisempia tilitapahtumia";
+    }
+
+    ui->textTilitapahtumat->setText(tulostus);
+}
+
+void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
+{
+   ui->btn_uudemmat->setEnabled(true);
+   max +=10;
+   i+=10;
+
+
+   QString tulostus="";
+
+   if (uusi_lista.length()>i && uusi_lista.length()>max) //tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
+       for (int x=i; x<max; x++){              //muuten tulee error
+           tulostus+=uusi_lista[x];
+     }
+   else {
+       tulostus="Ei aikaisempia tilitapahtumia";
+   }
+
+    if(QString::compare(tulostus,"Ei aikaisempia tilitapahtumia")==0){
+        ui->btn_vanhemmat->setEnabled(false);
+    }
+   ui->textTilitapahtumat->setText(tulostus);
 }
 
