@@ -1,4 +1,3 @@
-
 #include "tilitapahtumat.h"
 #include "myurl.h"
 #include <QStringList>

@@ -50,7 +50,8 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QSt
             tulostus+=uusi_lista[x];
       }
     else {
-        tulostus="Ei aikaisempia tilitapahtumia";
+        tulostus="Ei tilitapahtumia";
+        ui->btn_vanhemmat->setEnabled(false);
     }
 
     ui->textTilitapahtumat->setText(tulostus);
@@ -63,12 +64,18 @@ void KorttiWindow::tulosta_saldo(QStringList lista,QStringList omistaja,QString 
 {
     //tähän slottiin lähetetään kaikki saldo tulostustiedot.
     qDebug()<<"tulosta signaali vastaanotettu saldosta";
+    qDebug()<<lista.length();
 
     QString tapahtumat,omistajan;
     omistajan+=omistaja[0];
 
+    if(lista.length()>4) {
     for (int x=0; x<5; x++){
-                tapahtumat+=lista[x]; }
+                tapahtumat+=lista[x]; } }
+    else if (lista.length()<5 && lista.length()>0) {
+        for (int x=0; x<lista.length(); x++){
+                    tapahtumat+=lista[x]; } }
+    else { tapahtumat = "Ei tilitapahtumia";}
 
     ui->textSaldo->setText("Tilin omistajan tiedot: \n"+omistajan+"\n\n"+tapahtumat);
     ui->textSaldo->setEnabled(false);
