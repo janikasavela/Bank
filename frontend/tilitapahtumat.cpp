@@ -18,6 +18,7 @@ void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
         QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
         QJsonArray json_array = json_doc.array();
 
+         QStringList tapahtumat = {""};
     //siirretään haetut tiedot muuttujiin
         foreach (const QJsonValue &value, json_array) {
             QJsonObject json_obj = value.toObject();
@@ -26,7 +27,9 @@ void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
             tapahtumat+="Tapahtuma: "+json_obj["tapahtuma"].toString()+" "+"Paiva: "+json_obj["paiva"].toString()+" "+"Aika: "+json_obj["aika"].toString()+" "+"Summa: "+QString::number(json_obj["summa"].toInt())+"\r";
         }
 
+        qDebug()<<"\n"<<tapahtumat;
         qDebug()<<"lahetan nayta signal";
+        qDebug()<<"TAPAHTUMAT TULOSTEETTUUUUUUU  \n";
         emit tilitapahtumat_nayta(tapahtumat,tilinOmistaja,saldo,tilinumero); //lähetetään haetut tiedot tilitapahtumien tulostus slottiin korttiwindowille.
 
         reply->deleteLater();
@@ -35,7 +38,7 @@ void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
 
 void Tilitapahtumat::tilitapahtumat_clicked(QByteArray webToken, QString tili)
 {
-   qDebug()<<"vastaanotettiin tilit signal";
+   qDebug()<<"vastaanotettiin tili signaali";
    wb=webToken; //alustetaan webtoken
    qDebug()<<wb;
 

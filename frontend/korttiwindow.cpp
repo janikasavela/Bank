@@ -39,6 +39,7 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QSt
     qDebug()<<"tulosta signaali vastaanotettu tapahtumista";
     uusi_lista=lista;
 
+    ui->btn_uudemmat->setEnabled(false);
     QString tulostus="";
 
     if (uusi_lista.length()>i && uusi_lista.length()>max) //tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
@@ -50,7 +51,7 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QSt
     }
 
     ui->textTilitapahtumat->setText(tulostus);
-    ui->btn_uudemmat->setEnabled(false);
+
     ui->textTilitapahtumat->setEnabled(false);
     ui->label_tilitapahtumat->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+tilinumero);
 }
@@ -73,7 +74,9 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
 
     //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
     emit tilitapahtumat(webToken,aTili);
-    qDebug()<<"tilitapahtumat signal lähetetty";
+    ui->btn_uudemmat->setEnabled(false);
+    ui->btn_vanhemmat->setEnabled(true);
+    qDebug()<<"tili signal lähetetty";
 
 }
 
@@ -226,6 +229,7 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
    ui->btn_uudemmat->setEnabled(true);
    max +=10;
    i+=10;
+
 
    QString tulostus="";
 
