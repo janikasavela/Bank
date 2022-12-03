@@ -217,9 +217,6 @@ void KorttiWindow::on_btn_uudemmat_clicked() //tilitapahtumian < nuoli
         for (int x=i; x<max; x++){              //muuten tulee error
             tulostus+=uusi_lista[x];
       }
-    else {
-        tulostus="Ei aikaisempia tilitapahtumia";
-    }
 
     ui->textTilitapahtumat->setText(tulostus);
 }
