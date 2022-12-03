@@ -22,7 +22,7 @@ KorttiWindow::~KorttiWindow()
 }
 
 const QByteArray &KorttiWindow::getWebToken() const
-{   //t채t채 voi kutsua jos tarvii johonkin uuteen tauluun saada sen webtokenin. viel채 ei olla tarvittu t채t채 mihink채채n..
+{
     return webToken;
 }
 
@@ -174,10 +174,10 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehd�
     //Tarkistetaan onko valittu tili Credit vai Debit
 
     if(luotto[index]=="0"){
-        ui->labelActiveTili->setText("CREDIT Tili:");
+        ui->labelActiveTili->setText("DEBIT Tili:");
     }
     else{
-        ui->labelActiveTili->setText("DEBIT Tili:");
+        ui->labelActiveTili->setText("CREDIT Tili:");
     }
 }
 
