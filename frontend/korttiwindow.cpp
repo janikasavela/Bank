@@ -2,6 +2,7 @@
 #include "qdebug.h"
 #include "ui_korttiwindow.h"
 #include "tilitapahtumat.h"
+#include "saldo.h"
 
 KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
     QDialog(parent),
@@ -21,6 +22,8 @@ KorttiWindow::~KorttiWindow()
     delete ui;
     delete objectTilitapahtumat;
     objectTilitapahtumat = nullptr;
+    delete objectSaldo;
+    objectSaldo = nullptr;
 }
 
 const QByteArray &KorttiWindow::getWebToken() const
@@ -56,8 +59,24 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QSt
     ui->label_tilitapahtumat->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+tilinumero);
 }
 
-void KorttiWindow::on_btnTilitapahtumat_clicked()
+void KorttiWindow::tulosta_saldo(QStringList lista,QStringList omistaja,QString saldo,QString tilinumero)
 {
+    //tähän slottiin lähetetään kaikki saldo tulostustiedot.
+    qDebug()<<"tulosta signaali vastaanotettu saldosta";
+
+    QString tapahtumat,omistajan;
+    omistajan+=omistaja[0];
+
+    for (int x=0; x<5; x++){
+                tapahtumat+=lista[x]; }
+
+    ui->textSaldo->setText("Tilin omistajan tiedot: \n"+omistajan+"\n\n"+tapahtumat);
+    ui->textSaldo->setEnabled(false);
+    ui->label_saldo->setText(" Saldo: "+saldo+" Tilinumero: "+tilinumero);
+}
+
+void KorttiWindow::on_btnTilitapahtumat_clicked()
+{   ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Tilitapahtumat)");
     ui->stackedWidget->setCurrentIndex(2);
     ui->btnReturn->show();
@@ -84,10 +103,24 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
 
 
 void KorttiWindow::on_btnSaldo_clicked()
-{
+{   ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Saldo)");
     ui->stackedWidget->setCurrentIndex(1);
     ui->btnReturn->show();
+
+    objectSaldo = new Saldo(kortti); //luodaan koosteyhteys tilitapahtumat luokkaan
+    connect(this,SIGNAL(saldo_signal(QByteArray,QString)),   //yhdistetään signaali tästä tilitapahtumien alustus slottiin, signaalin mukana webtoken
+            objectSaldo, SLOT(saldo_clicked(QByteArray,QString)) );
+
+    //yhdistetään signaali jonka mukana viedään tiedot tilitapahtumista tänne korttiwindowin tilitapahtumien tulostus slottiin
+    connect(objectSaldo,SIGNAL(saldo_nayta(QStringList,QStringList,QString,QString)),
+            this, SLOT(tulosta_saldo(QStringList,QStringList,QString,QString)), Qt::DirectConnection);
+
+    //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
+    emit saldo_signal(webToken,aTili);
+
+    qDebug()<<"saldo signal lähetetty";
+
 }
 
 
@@ -113,7 +146,8 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->stackedWidget->setCurrentIndex(0);
     ui->btnReturn->hide();
     ui->textTilitapahtumat->clear();
-
+    ui->textSaldo->clear();
+    ui->comboTili->setEnabled(true);
     i=0;
     max=10;
 
