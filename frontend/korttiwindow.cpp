@@ -50,7 +50,7 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QSt
     }
 
     ui->textTilitapahtumat->setText(tulostus);
-
+    ui->btn_uudemmat->setEnabled(false);
     ui->textTilitapahtumat->setEnabled(false);
     ui->label_tilitapahtumat->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+tilinumero);
 }
@@ -108,6 +108,8 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->stackedWidget->setCurrentIndex(0);
     ui->btnReturn->hide();
     ui->textTilitapahtumat->clear();
+    i=0;
+    max=10;
 }
 
 void KorttiWindow::on_btnLogout_clicked()
@@ -224,7 +226,6 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
    ui->btn_uudemmat->setEnabled(true);
    max +=10;
    i+=10;
-
 
    QString tulostus="";
 
