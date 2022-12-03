@@ -230,20 +230,24 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
    max +=10;
    i+=10;
 
-
+   int pituus = uusi_lista.length();
+   int loput = max-pituus;
+   int uusi_max=max-loput;
    QString tulostus="";
-
+   int y= 1;
    if (uusi_lista.length()>i && uusi_lista.length()>max) //tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
        for (int x=i; x<max; x++){              //muuten tulee error
            tulostus+=uusi_lista[x];
+           y=0;
      }
-   else {
-       tulostus="Ei aikaisempia tilitapahtumia";
-   }
 
-    if(QString::compare(tulostus,"Ei aikaisempia tilitapahtumia")==0){
-        ui->btn_vanhemmat->setEnabled(false);
+   else if(y == 1) {
+       for (int x=i; x<uusi_max; x++){
+           tulostus+=uusi_lista[x];
+   } ui->btn_vanhemmat->setEnabled(false);
     }
+
+
    ui->textTilitapahtumat->setText(tulostus);
 }
 

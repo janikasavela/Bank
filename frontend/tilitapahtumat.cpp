@@ -19,6 +19,8 @@ void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
         QJsonArray json_array = json_doc.array();
 
          QStringList tapahtumat = {""};
+         tapahtumat.clear();
+
     //siirretään haetut tiedot muuttujiin
         foreach (const QJsonValue &value, json_array) {
             QJsonObject json_obj = value.toObject();
