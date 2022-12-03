@@ -130,7 +130,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>13</pointsize>
+       <pointsize>11</pointsize>
       </font>
      </property>
     </widget>
@@ -152,31 +152,11 @@
       <string>TextLabel</string>
      </property>
     </widget>
-    <widget class="QToolButton" name="btn_vanhemmat">
-     <property name="geometry">
-      <rect>
-       <x>460</x>
-       <y>390</y>
-       <width>121</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-       <italic>false</italic>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>&gt;</string>
-     </property>
-    </widget>
     <widget class="QToolButton" name="btn_uudemmat">
      <property name="geometry">
       <rect>
        <x>100</x>
-       <y>390</y>
+       <y>370</y>
        <width>121</width>
        <height>41</height>
       </rect>
@@ -191,6 +171,26 @@
      </property>
      <property name="text">
       <string>&lt;</string>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="btn_vanhemmat">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>370</y>
+       <width>121</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>&gt;</string>
      </property>
     </widget>
    </widget>
@@ -226,10 +226,35 @@
     <string>Kirjaudu ulos</string>
    </property>
   </widget>
+  <widget class="QComboBox" name="comboTili">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>30</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelActiveTili">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>10</y>
+     <width>111</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Tili:</string>
+   </property>
+  </widget>
   <zorder>stackedWidget</zorder>
   <zorder>labelidkortti</zorder>
   <zorder>btnReturn</zorder>
   <zorder>btnLogout</zorder>
+  <zorder>comboTili</zorder>
+  <zorder>labelActiveTili</zorder>
  </widget>
  <resources/>
  <connections/>

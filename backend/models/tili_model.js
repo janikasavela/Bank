@@ -4,6 +4,12 @@ const tili = {
   getById: function(id, callback) {
     return db.query('select * from tili where id_tilinumero=?', [id], callback);
   },
+  checkTilit: function(id, callback) {
+    return db.query('select tili.id_tilinumero, tili.saldo, tili.luottoraja from tili inner join oikeudet on tili.id_tilinumero=oikeudet.id_tilinumero where id_kortti=?', [id], callback);
+  },
+  getSaldo: function(id, callback) {
+    return db.query('select * from tili where id_tilinumero=?', [id], callback);
+  },
   getAll: function(callback) {
     return db.query('select * from tili', callback);
   },
