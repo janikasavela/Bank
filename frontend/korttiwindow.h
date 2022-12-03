@@ -6,6 +6,7 @@
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
 #include "tilitapahtumat.h"
+#include "tilioperaatio.h"
 
 namespace Ui {
 class KorttiWindow;
@@ -25,9 +26,11 @@ public:
 signals:
     void timeout(); //yhdistety uloskirjautumisen slottiin
     void tilitapahtumat(QByteArray,QString);
+    void hae_tiliInfo(QByteArray,QString);
 
 public slots:
     void tulosta_Tilitapahtumat(QStringList,QString,QString,QString);
+    void tuo_asiakas_info(QString,QString);
 
 private slots:
     void on_btnTilitapahtumat_clicked();
@@ -41,6 +44,7 @@ private slots:
     void on_btn_uudemmat_clicked();
     void on_btn_vanhemmat_clicked();
 
+
 private:
     Ui::KorttiWindow *ui;
     QByteArray webToken;
@@ -48,6 +52,7 @@ private:
     QNetworkReply *reply;
     QByteArray response_data;
     Tilitapahtumat *objectTilitapahtumat;
+    tilioperaatio *objectTilioperaatio;
     QStringList tilinumero, saldo, luotto, uusi_lista;
     QString aTili;
     int max, i;

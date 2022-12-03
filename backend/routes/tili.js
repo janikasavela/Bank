@@ -27,7 +27,21 @@ router.get('/',
             }
           );
         }
-  );
+  );    
+  router.get('/info/:id?', 
+  function(request, response) {
+        tili.getTiliInfo(request.params.id, function(dbError, dbResult) {
+          if(dbError){
+            response.json(dbError.errno);
+          }
+          else{
+            console.log(dbResult);
+            response.json(dbResult);
+          }
+          }
+        );
+      }
+);
 
 router.get('/:id?',
     function (request, response) {
@@ -64,6 +78,16 @@ function(request, response) {
   });
 });
 
+router.put('/nosto/', 
+function(request, response) {
+  tili.nosto(request.body, function(err, dbResult) {
+    if (err) {
+      response.json(err);
+    } else {
+      response.json(dbResult);
+    }
+  });
+});
 
 router.put('/:id', 
 function(request, response) {
@@ -75,5 +99,7 @@ function(request, response) {
     }
   });
 });
+
+
 
 module.exports = router;

@@ -15,12 +15,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     myurl.cpp \
+    tilioperaatio.cpp \
     tilitapahtumat.cpp
 
 HEADERS += \
     korttiwindow.h \
     mainwindow.h \
     myurl.h \
+    tilioperaatio.h \
     tilitapahtumat.h
 
 FORMS += \

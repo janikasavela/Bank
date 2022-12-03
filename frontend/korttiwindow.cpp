@@ -119,6 +119,13 @@ void KorttiWindow::on_btnLogout_clicked()
 
 void KorttiWindow::tilitSlot(QNetworkReply *reply)
 {
+    //tilioperaatioiden alustus
+    objectTilioperaatio = new tilioperaatio(aTili);
+    connect(this,SIGNAL(hae_tiliInfo(QByteArray,QString)),objectTilioperaatio, SLOT(tilioperaatio_info(QByteArray,QString)));
+    connect(objectTilioperaatio,SIGNAL(vie_asiakas_info(QString,QString)), this, SLOT(tuo_asiakas_info(QString,QString)));
+    connect
+    //tilioperaatioiden alustus END
+
    //Haetaan kaikki tilit johon kortin haltijalla on oikeus
 
    QByteArray response_data=reply->readAll();
@@ -143,17 +150,18 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
       }
       if(kerrat==1){
           if(luotto[0]=="0"){
-              ui->labelActiveTili->setText("DEBIT Tili:");
+          ui->labelActiveTili->setText("DEBIT Tili:");
           ui->comboTili->addItem(tilinumero[0]);
           ui->comboTili->setDisabled(1);
           aTili=ui->comboTili->itemText(0);
-          }
+           }
           else{
               ui->labelActiveTili->setText("CREDIT Tili:");
               ui->comboTili->addItem(tilinumero[0]);
               ui->comboTili->setDisabled(1);
               aTili=ui->comboTili->itemText(0);
           }
+          emit hae_tiliInfo(webToken,aTili);
           }
 
 
@@ -187,7 +195,7 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehdÃ
     }
 
     //Tarkistetaan onko valittu tili Credit vai Debit
-
+    emit hae_tiliInfo(webToken,aTili);
     if(luotto[index]=="0"){
         ui->labelActiveTili->setText("DEBIT Tili:");
     }
@@ -239,6 +247,11 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
     if(QString::compare(tulostus,"Ei aikaisempia tilitapahtumia")==0){
         ui->btn_vanhemmat->setEnabled(false);
     }
-   ui->textTilitapahtumat->setText(tulostus);
+    ui->textTilitapahtumat->setText(tulostus);
 }
 
+void KorttiWindow::tuo_asiakas_info(QString omistaja, QString saldo)
+{
+    //Info-labelien pÃ¤ivitys
+    ui->label_tiliInfo->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+aTili);
+}
