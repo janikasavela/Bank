@@ -39,6 +39,7 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QSt
     qDebug()<<"tulosta signaali vastaanotettu tapahtumista";
     uusi_lista=lista;
 
+    ui->btn_uudemmat->setEnabled(false);
     QString tulostus="";
 
     if (uusi_lista.length()>i && uusi_lista.length()>max) //tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
@@ -73,7 +74,11 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
 
     //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
     emit tilitapahtumat(webToken,aTili);
-    qDebug()<<"tilitapahtumat signal lähetetty";
+
+    ui->btn_uudemmat->setEnabled(false);
+    ui->btn_vanhemmat->setEnabled(true);
+    qDebug()<<"tili signal lähetetty";
+
 
 }
 
@@ -108,6 +113,10 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->stackedWidget->setCurrentIndex(0);
     ui->btnReturn->hide();
     ui->textTilitapahtumat->clear();
+
+    i=0;
+    max=10;
+
 }
 
 void KorttiWindow::on_btnLogout_clicked()
@@ -212,9 +221,7 @@ void KorttiWindow::on_btn_uudemmat_clicked() //tilitapahtumian < nuoli
         for (int x=i; x<max; x++){              //muuten tulee error
             tulostus+=uusi_lista[x];
       }
-    else {
-        tulostus="Ei aikaisempia tilitapahtumia";
-    }
+
 
     ui->textTilitapahtumat->setText(tulostus);
 }
@@ -226,19 +233,25 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
    i+=10;
 
 
+   int pituus = uusi_lista.length();
+   int loput = max-pituus;
+   int uusi_max=max-loput;
    QString tulostus="";
-
+   int y= 1;
    if (uusi_lista.length()>i && uusi_lista.length()>max) //tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
        for (int x=i; x<max; x++){              //muuten tulee error
            tulostus+=uusi_lista[x];
+           y=0;
      }
-   else {
-       tulostus="Ei aikaisempia tilitapahtumia";
-   }
 
-    if(QString::compare(tulostus,"Ei aikaisempia tilitapahtumia")==0){
-        ui->btn_vanhemmat->setEnabled(false);
+   else if(y == 1) {
+       for (int x=i; x<uusi_max; x++){
+           tulostus+=uusi_lista[x];
+   } ui->btn_vanhemmat->setEnabled(false);
     }
+
+
+
    ui->textTilitapahtumat->setText(tulostus);
 }
 
