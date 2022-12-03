@@ -74,9 +74,11 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
 
     //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
     emit tilitapahtumat(webToken,aTili);
+
     ui->btn_uudemmat->setEnabled(false);
     ui->btn_vanhemmat->setEnabled(true);
     qDebug()<<"tili signal lähetetty";
+
 
 }
 
@@ -111,8 +113,10 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->stackedWidget->setCurrentIndex(0);
     ui->btnReturn->hide();
     ui->textTilitapahtumat->clear();
+
     i=0;
     max=10;
+
 }
 
 void KorttiWindow::on_btnLogout_clicked()
@@ -218,6 +222,7 @@ void KorttiWindow::on_btn_uudemmat_clicked() //tilitapahtumian < nuoli
             tulostus+=uusi_lista[x];
       }
 
+
     ui->textTilitapahtumat->setText(tulostus);
 }
 
@@ -226,6 +231,7 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
    ui->btn_uudemmat->setEnabled(true);
    max +=10;
    i+=10;
+
 
    int pituus = uusi_lista.length();
    int loput = max-pituus;
@@ -243,6 +249,7 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
            tulostus+=uusi_lista[x];
    } ui->btn_vanhemmat->setEnabled(false);
     }
+
 
 
    ui->textTilitapahtumat->setText(tulostus);

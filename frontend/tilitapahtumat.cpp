@@ -30,6 +30,7 @@ void Tilitapahtumat::tilitapahtumatSlot(QNetworkReply *reply)
         }
 
         qDebug()<<"\n"<<tapahtumat;
+
         qDebug()<<"lahetan nayta signal";
         qDebug()<<"TAPAHTUMAT TULOSTEETTUUUUUUU  \n";
         emit tilitapahtumat_nayta(tapahtumat,tilinOmistaja,saldo,tilinumero); //lähetetään haetut tiedot tilitapahtumien tulostus slottiin korttiwindowille.
