@@ -8,7 +8,7 @@ const tili = {
     return db.query('select tili.id_tilinumero, tili.saldo, tili.luottoraja from tili inner join oikeudet on tili.id_tilinumero=oikeudet.id_tilinumero where id_kortti=?', [id], callback);
   },
   getSaldo: function(id, callback) {
-    return db.query('select * from tili where id_tilinumero=?', [id], callback);
+    return db.query('select tili.saldo as "saldo", concat(asiakas.etunimi," ",asiakas.sukunimi) as "tilin omistaja", asiakas.osoite as "osoite", asiakas.puhnum as "puhnum", tilitapahtumat.tapahtuma, date_format(cast(tapahtuma_aika as date),"%d.%m.%Y") as "paiva", (cast(tapahtuma_aika as time)) as "aika", tilitapahtumat.summa as "summa" from tilitapahtumat inner join tili on tilitapahtumat.id_tilinumero=tili.id_tilinumero inner join asiakas on tili.id_asiakas=asiakas.id_asiakas where tilitapahtumat.id_tilinumero=? ORDER BY tilitapahtumat.tapahtuma_aika DESC LIMIT 5', [id], callback);
   },
   getAll: function(callback) {
     return db.query('select * from tili', callback);
