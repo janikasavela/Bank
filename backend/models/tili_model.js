@@ -36,7 +36,7 @@ const tili = {
      },  
   nosto: function(update_data, callback) {
     return db.query(
-      'update tili set saldo=? where id_tilinumero=?',[update_data.saldo, update_data.id_tilinumero],callback);
+      'CALL credit_nosto(?, ?, ?);',[update_data.id_kortti, update_data.id_tilinumero, update_data.maara],callback);
      }
 };
 module.exports = tili;

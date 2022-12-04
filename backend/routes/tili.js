@@ -93,13 +93,13 @@ function(request, response) {
   });
 });
 
-router.put('/nosto/', 
+router.post('/nosto/', 
 function(request, response) {
   tili.nosto(request.body, function(err, dbResult) {
     if (err) {
       response.json(err);
     } else {
-      response.json(dbResult);
+      response.send(true);
     }
   });
 });

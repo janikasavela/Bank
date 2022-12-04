@@ -350,14 +350,21 @@ void KorttiWindow::on_btnNosta_clicked()
     qDebug()<<"nostetaan "+ui->lineNostoMaara->text();
     //
     //nosto osuus
+    qDebug()<<kortti;
+    qDebug()<<aTili;
+    QJsonObject jsonObj;
+    jsonObj.insert("id_kortti",kortti);
+    jsonObj.insert("id_tilinumero",aTili);
+    jsonObj.insert("maara",ui->lineNostoMaara->text());
     QString site_url=MyUrl::getBaseUrl()+"/tili/nosto/";
     QNetworkRequest request((site_url));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     //WEBTOKEN ALKU
     request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
     //WEBTOKEN LOPPU
     korttiManager = new QNetworkAccessManager(this);
     connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(tiliOperaatio(QNetworkReply*)));
-    reply = korttiManager->get(request);
+    reply = korttiManager->post(request, QJsonDocument(jsonObj).toJson());
     //
     on_btnTyhjenna_clicked();
 }
@@ -387,5 +394,19 @@ void KorttiWindow::getOmistajaSlot(QNetworkReply *reply)
        omistaja_tiedot=tilin_omistaja_tiedot[0];
        reply->deleteLater();
        korttiManager->deleteLater();
+}
+
+void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
+{
+    response_data=reply->readAll();
+    qDebug()<<response_data;
+
+   //int test=1; //compare funktio palauttaa 0 jos vertailu tosi, muuten -1.
+    if(QString::compare(response_data,"true")==0){
+        on_btnReturn_clicked();
+        QMessageBox msgBox;
+        msgBox.setText("Tilisiirto suoritettu onnistuneesti!");
+        msgBox.exec();
+    }
 }
 
