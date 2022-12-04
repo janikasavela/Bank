@@ -123,7 +123,7 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
     objectTilioperaatio = new tilioperaatio(aTili);
     connect(this,SIGNAL(hae_tiliInfo(QByteArray,QString)),objectTilioperaatio, SLOT(tilioperaatio_info(QByteArray,QString)));
     connect(objectTilioperaatio,SIGNAL(vie_asiakas_info(QString,QString)), this, SLOT(tuo_asiakas_info(QString,QString)));
-    connect
+    //connect(ui->btnNosta,SIGNAL(clicked()),objectTilioperaatio, SLOT(nostoSlot(QNetworkReply *reply)));
     //tilioperaatioiden alustus END
 
    //Haetaan kaikki tilit johon kortin haltijalla on oikeus
@@ -255,3 +255,27 @@ void KorttiWindow::tuo_asiakas_info(QString omistaja, QString saldo)
     //Info-labelien päivitys
     ui->label_tiliInfo->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+aTili);
 }
+
+void KorttiWindow::on_btn20e_clicked()
+{
+    ui->lineNostoMaara->setText("20");
+    ui->btnNosta->setEnabled(1);
+}
+
+
+void KorttiWindow::on_btn40e_clicked()
+{
+
+}
+
+
+void KorttiWindow::on_btn60e_clicked()
+{
+
+}
+
+void KorttiWindow::on_btnNosta_clicked()
+{
+
+}
+

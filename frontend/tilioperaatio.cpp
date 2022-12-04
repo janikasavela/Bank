@@ -50,4 +50,5 @@ void tilioperaatio::tilioperaatio_info(QByteArray webToken, QString aTili)
    connect(operationManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(tilioperaatio_info_done(QNetworkReply*)));
 
    reply = operationManager->get(request);
+
 }
