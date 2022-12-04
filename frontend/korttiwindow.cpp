@@ -151,7 +151,9 @@ void KorttiWindow::on_btnSaldo_clicked()
 
 void KorttiWindow::on_btnNostaRahaa_clicked()
 {
+    ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Nosto)");
+    ui->label_tiliInfo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili);
     ui->stackedWidget->setCurrentIndex(3);
     ui->btnReturn->show();
 }
@@ -159,6 +161,7 @@ void KorttiWindow::on_btnNostaRahaa_clicked()
 
 void KorttiWindow::on_btnSiirraRahaa_clicked()
 {
+    ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Siirto)");
     ui->stackedWidget->setCurrentIndex(4);
     ui->btnReturn->show();
@@ -186,6 +189,13 @@ void KorttiWindow::on_btnLogout_clicked()
 
 void KorttiWindow::tilitSlot(QNetworkReply *reply)
 {
+    //tilioperaatioiden alustus
+    //objectTilioperaatio = new tilioperaatio(aTili);
+    //connect(this,SIGNAL(hae_tiliInfo(QByteArray,QString)),objectTilioperaatio, SLOT(tilioperaatio_info(QByteArray,QString)));
+    //connect(objectTilioperaatio,SIGNAL(vie_asiakas_info(QString,QString)), this, SLOT(tuo_asiakas_info(QString,QString)));
+    //connect(ui->btnNosta,SIGNAL(clicked()),objectTilioperaatio, SLOT(nostoSlot(QNetworkReply *reply)));
+    //tilioperaatioiden alustus END
+
    //Haetaan kaikki tilit johon kortin haltijalla on oikeus
 
    QByteArray response_data=reply->readAll();
@@ -211,18 +221,8 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
           luotto_string=luotto[0];
       }
       if(kerrat==1){
-          if(luotto[0]=="0"){
-              ui->labelActiveTili->setText("DEBIT Tili:");
           ui->comboTili->addItem(tilinumero[0]);
-          ui->comboTili->setDisabled(1);
-          aTili=ui->comboTili->itemText(0);
-          }
-          else{
-              ui->labelActiveTili->setText("CREDIT Tili:");
-              ui->comboTili->addItem(tilinumero[0]);
-              ui->comboTili->setDisabled(1);
-              aTili=ui->comboTili->itemText(0);
-          }
+          on_comboTili_activated(0);
           }
 
 
@@ -260,7 +260,6 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehdÃ
     }
 
     //Tarkistetaan onko valittu tili Credit vai Debit
-
     if(luotto[index]=="0"){
         ui->labelActiveTili->setText("DEBIT Tili:");
     }
@@ -322,10 +321,59 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
            tulostus+=uusi_lista[x];
    } ui->btn_vanhemmat->setEnabled(false);
     }
+    ui->textTilitapahtumat->setText(tulostus);
+}
 
+void KorttiWindow::on_btn20e_clicked(){nostoMaaraPaivitys("20");}
+void KorttiWindow::on_btn40e_clicked(){nostoMaaraPaivitys("40");}
+void KorttiWindow::on_btn60e_clicked(){nostoMaaraPaivitys("60");}
+void KorttiWindow::on_btn100e_clicked(){nostoMaaraPaivitys("100");}
+void KorttiWindow::on_btn200e_clicked(){nostoMaaraPaivitys("200");}
+void KorttiWindow::on_btn500e_clicked(){nostoMaaraPaivitys("500");}
 
+void KorttiWindow::on_btnXe_clicked()
+{
+    bool ok;
+    int ii = QInputDialog::getInt(this,"Nosto","0-"+saldo_string, 1, 1, saldo_string.toInt(), 1, &ok);
+    if (ok){nostoMaaraPaivitys(QString::number(ii));}
+}
 
-   ui->textTilitapahtumat->setText(tulostus);
+void KorttiWindow::on_btnTyhjenna_clicked()
+{
+    ui->lineNostoMaara->clear();
+    ui->btnNosta->setDisabled(1);
+    ui->btnTyhjenna->setDisabled(1);
+}
+
+void KorttiWindow::on_btnNosta_clicked()
+{
+    qDebug()<<"nostetaan "+ui->lineNostoMaara->text();
+    //
+    //nosto osuus
+    qDebug()<<kortti;
+    qDebug()<<aTili;
+    QJsonObject jsonObj;
+    jsonObj.insert("id_kortti",kortti);
+    jsonObj.insert("id_tilinumero",aTili);
+    jsonObj.insert("maara",ui->lineNostoMaara->text());
+    QString site_url=MyUrl::getBaseUrl()+"/tili/nosto/";
+    QNetworkRequest request((site_url));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    //WEBTOKEN ALKU
+    request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
+    //WEBTOKEN LOPPU
+    korttiManager = new QNetworkAccessManager(this);
+    connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(tiliOperaatio(QNetworkReply*)));
+    reply = korttiManager->post(request, QJsonDocument(jsonObj).toJson());
+    //
+    on_btnTyhjenna_clicked();
+}
+
+void KorttiWindow::nostoMaaraPaivitys(QString maara)
+{
+    ui->lineNostoMaara->setText(maara);
+    ui->btnNosta->setEnabled(1);
+    ui->btnTyhjenna->setEnabled(1);
 }
 
 void KorttiWindow::getOmistajaSlot(QNetworkReply *reply)
@@ -346,5 +394,19 @@ void KorttiWindow::getOmistajaSlot(QNetworkReply *reply)
        omistaja_tiedot=tilin_omistaja_tiedot[0];
        reply->deleteLater();
        korttiManager->deleteLater();
+}
+
+void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
+{
+    response_data=reply->readAll();
+    qDebug()<<response_data;
+
+   //int test=1; //compare funktio palauttaa 0 jos vertailu tosi, muuten -1.
+    if(QString::compare(response_data,"true")==0){
+        on_btnReturn_clicked();
+        QMessageBox msgBox;
+        msgBox.setText("Tilisiirto suoritettu onnistuneesti!");
+        msgBox.exec();
+    }
 }
 
