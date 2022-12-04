@@ -36,7 +36,7 @@ const tili = {
      },  
   nosto: function(update_data, callback) {
     return db.query(
-      'CALL credit_nosto(?, ?, ?);',[update_data.id_kortti, update_data.id_tilinumero, update_data.maara],callback);
+      'CALL nosto(?, ?, ?);',[update_data.id_kortti, update_data.id_tilinumero, update_data.maara],callback);
      }
 };
 module.exports = tili;
