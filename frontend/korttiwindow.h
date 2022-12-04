@@ -67,7 +67,8 @@ private:
     Tilitapahtumat *objectTilitapahtumat;
     Saldo *objectSaldo;
     QStringList tilinumero, saldo, luotto, uusi_lista,tilin_omistaja_tiedot;
-    QString aTili, tilin_omistaja, saldo_string,omistaja_tiedot,luotto_string;
+    QString aTili, tilin_omistaja, saldo_string,omistaja_tiedot,luotto_string, maara;
+    bool bluotto;
     int max, i;
     QNetworkAccessManager *korttiManager;
 };

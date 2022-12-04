@@ -153,7 +153,7 @@ void KorttiWindow::on_btnNostaRahaa_clicked()
 {
     ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Nosto)");
-    if (saldo_string == "0") { ui->label_tiliInfo->setText(" Saldo: "+luotto_string+" Tilinumero: "+aTili); }
+    if (bluotto) { ui->label_tiliInfo->setText(" Saldo: "+luotto_string+" Tilinumero: "+aTili); }
     else {ui->label_tiliInfo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
     ui->stackedWidget->setCurrentIndex(3);
     ui->btnReturn->show();
@@ -190,13 +190,6 @@ void KorttiWindow::on_btnLogout_clicked()
 
 void KorttiWindow::tilitSlot(QNetworkReply *reply)
 {
-    //tilioperaatioiden alustus
-    //objectTilioperaatio = new tilioperaatio(aTili);
-    //connect(this,SIGNAL(hae_tiliInfo(QByteArray,QString)),objectTilioperaatio, SLOT(tilioperaatio_info(QByteArray,QString)));
-    //connect(objectTilioperaatio,SIGNAL(vie_asiakas_info(QString,QString)), this, SLOT(tuo_asiakas_info(QString,QString)));
-    //connect(ui->btnNosta,SIGNAL(clicked()),objectTilioperaatio, SLOT(nostoSlot(QNetworkReply *reply)));
-    //tilioperaatioiden alustus END
-
    //Haetaan kaikki tilit johon kortin haltijalla on oikeus
 
    QByteArray response_data=reply->readAll();
@@ -263,9 +256,11 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehd�
     //Tarkistetaan onko valittu tili Credit vai Debit
     if(luotto[index]=="0"){
         ui->labelActiveTili->setText("DEBIT Tili:");
+        bluotto=0;
     }
     else{
         ui->labelActiveTili->setText("CREDIT Tili:");
+        bluotto=1;
     }
 
     QString site_url=MyUrl::getBaseUrl()+"/tili/checkOmistaja/"+aTili;
@@ -335,7 +330,9 @@ void KorttiWindow::on_btn500e_clicked(){nostoMaaraPaivitys("500");}
 void KorttiWindow::on_btnXe_clicked()
 {
     bool ok;
-    int ii = QInputDialog::getInt(this,"Nosto","0-"+saldo_string, 1, 1, saldo_string.toInt(), 1, &ok);
+    int ii;
+    if(bluotto){QInputDialog::getInt(this,"Nosto","0-"+luotto_string, 1, 1, luotto_string.toInt(), 1, &ok);}
+    else{QInputDialog::getInt(this,"Nosto","0-"+saldo_string, 1, 1, saldo_string.toInt(), 1, &ok);}
     if (ok){nostoMaaraPaivitys(QString::number(ii));}
 }
 
@@ -348,7 +345,16 @@ void KorttiWindow::on_btnTyhjenna_clicked()
 
 void KorttiWindow::on_btnNosta_clicked()
 {
-    qDebug()<<"nostetaan "+ui->lineNostoMaara->text();
+    maara=ui->lineNostoMaara->text();
+    if(bluotto==false && saldo_string.toInt()-maara.toInt()<0){
+        QMessageBox::warning(this,"Varoitus","Tilillä ei ole tarpeeksi rahaa");
+    }
+    else if(bluotto && luotto_string.toInt()-maara.toInt()<0){
+        QMessageBox::warning(this,"Varoitus","Tilillä ei ole tarpeeksi katetta");
+    }
+
+    else{
+    qDebug()<<"nostetaan "+maara;
     //
     //nosto osuus
     qDebug()<<kortti;
@@ -367,12 +373,13 @@ void KorttiWindow::on_btnNosta_clicked()
     connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(tiliOperaatio(QNetworkReply*)));
     reply = korttiManager->post(request, QJsonDocument(jsonObj).toJson());
     //
+    }
     on_btnTyhjenna_clicked();
 }
 
-void KorttiWindow::nostoMaaraPaivitys(QString maara)
+void KorttiWindow::nostoMaaraPaivitys(QString s)
 {
-    ui->lineNostoMaara->setText(maara);
+    ui->lineNostoMaara->setText(s);
     ui->btnNosta->setEnabled(1);
     ui->btnTyhjenna->setEnabled(1);
 }
@@ -402,12 +409,23 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
     response_data=reply->readAll();
     qDebug()<<response_data;
 
-   //int test=1; //compare funktio palauttaa 0 jos vertailu tosi, muuten -1.
     if(QString::compare(response_data,"true")==0){
         on_btnReturn_clicked();
         QMessageBox msgBox;
         msgBox.setText("Tilisiirto suoritettu onnistuneesti!");
         msgBox.exec();
+        if(bluotto){
+            qDebug()<<"luotto paivitys";
+            luotto_string=QString::number(luotto_string.toInt()-maara.toInt());
+        }
+        else{
+            qDebug()<<"saldo paivitys";
+            qDebug()<<QString::number(saldo_string.toInt()-maara.toInt());
+            saldo_string=QString::number(saldo_string.toInt()-maara.toInt());
+        }
+    }
+    else{
+        QMessageBox::critical(this,"Virhe","Virhe nostoyhteydessä");
     }
 }
 
