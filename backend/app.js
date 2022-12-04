@@ -31,7 +31,6 @@ var loginRouter = require('./routes/login');
 var tilitapahtumatRouter = require('./routes/tilitapahtumat');
 var selaa_tilitapahtumiaRouter = require('./routes/selaa_tilitapahtumia');
 var hae_saldoRouter = require('./routes/hae_saldo');
-var hae_omistajaRouter = require('./routes/hae_omistaja');
 
 var app = express();
 
@@ -50,7 +49,6 @@ app.use('/oikeudet', oikeudetRouter);
 app.use('/tilitapahtumat', tilitapahtumatRouter);
 app.use('/selaa_tilitapahtumia', selaa_tilitapahtumiaRouter);
 app.use('/hae_saldo', hae_saldoRouter);
-app.use('/hae_omistaja', hae_omistajaRouter);
 
 
 module.exports = app;

@@ -252,7 +252,7 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehdÃ
         ui->labelActiveTili->setText("CREDIT Tili:");
     }
 
-    QString site_url=MyUrl::getBaseUrl()+"/hae_omistaja/"+aTili;
+    QString site_url=MyUrl::getBaseUrl()+"/tili/checkOmistaja/"+aTili;
     QNetworkRequest request((site_url));
     //WEBTOKEN ALKU
     request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
