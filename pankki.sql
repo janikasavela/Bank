@@ -125,7 +125,7 @@ CREATE TABLE `tili` (
 
 LOCK TABLES `tili` WRITE;
 /*!40000 ALTER TABLE `tili` DISABLE KEYS */;
-INSERT INTO `tili` VALUES (2,1,516,0),(3,1,480,500),(4,4,1673,0),(5,5,786,0),(6,5,0,500),(7,6,1430,0),(8,7,2460,0),(9,7,0,1500);
+INSERT INTO `tili` VALUES (2,1,20,0),(3,1,0,500),(4,4,1663,0),(5,5,786,0),(6,5,0,500),(7,6,1320,0),(8,7,2460,0),(9,7,1490,1500);
 /*!40000 ALTER TABLE `tili` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +148,7 @@ CREATE TABLE `tilitapahtumat` (
   KEY `tilinumero_tilitapahtumat_idx` (`id_tilinumero`),
   CONSTRAINT `kortti_tilitapahtumat` FOREIGN KEY (`id_kortti`) REFERENCES `kortti` (`id_kortti`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `tilinumero_tilitapahtumat` FOREIGN KEY (`id_tilinumero`) REFERENCES `tili` (`id_tilinumero`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,14 +157,14 @@ CREATE TABLE `tilitapahtumat` (
 
 LOCK TABLES `tilitapahtumat` WRITE;
 /*!40000 ALTER TABLE `tilitapahtumat` DISABLE KEYS */;
-INSERT INTO `tilitapahtumat` VALUES (2,2,'1012','2022-11-30 08:59:06','nosto',30),(3,2,'1012','2022-11-30 09:15:25','-tilisiirto',200),(5,2,'1012','2022-11-30 09:21:20','nosto',20),(6,2,'1012','2022-11-30 09:24:24','-tilisiirto',10),(8,2,'1012','2022-11-30 10:39:52','-tilisiirto',10),(9,4,'1012','2022-11-30 10:39:52','+tilisiirto',10),(10,2,'1012','2022-11-30 18:11:32','-tilisiirto',10),(11,4,'1012','2022-11-30 18:11:32','+tilisiirto',10),(12,4,'1014','2022-11-30 19:54:45','-tilisiirto',10),(13,2,'1014','2022-11-30 19:54:45','+tilisiirto',10),(14,3,'1012','2022-11-30 19:56:16','nosto',20),(15,2,'1012','2022-11-30 22:12:37','nosto',20),(16,2,'1012','2022-11-30 22:12:57','nosto',20),(17,2,'1012','2022-11-30 22:15:36','nosto',20),(18,2,'1012','2022-11-30 22:15:58','nosto',20),(19,2,'1012','2022-11-30 22:16:05','nosto',50),(20,2,'1012','2022-11-30 22:17:13','nosto',10),(21,2,'1012','2022-11-30 22:17:26','nosto',20),(22,2,'1012','2022-11-30 22:18:10','nosto',10),(23,2,'1012','2022-11-30 22:18:20','nosto',20),(24,2,'1012','2022-11-30 22:18:33','nosto',20),(25,3,'1012','2022-12-01 06:08:49','-tilisiirto',30),(26,2,'1012','2022-12-01 06:08:49','+tilisiirto',30),(27,2,'1012','2022-12-02 23:08:36','nosto',12),(28,2,'1012','2022-12-02 23:08:44','nosto',7),(29,2,'1012','2022-12-02 23:08:52','nosto',10),(30,2,'1012','2022-12-02 23:09:29','-tilisiirto',20),(31,5,'1012','2022-12-02 23:09:29','+tilisiirto',20),(32,2,'1012','2022-12-02 23:09:39','-tilisiirto',3),(33,4,'1012','2022-12-02 23:09:39','+tilisiirto',3),(34,3,'1012','2022-12-03 01:44:37','nosto',10),(35,3,'1012','2022-12-03 01:44:41','-tilisiirto',20),(36,2,'1012','2022-12-03 01:44:41','+tilisiirto',20),(37,3,'1012','2022-12-03 01:44:52','-tilisiirto',33),(38,2,'1012','2022-12-03 01:44:52','+tilisiirto',33),(39,3,'1012','2022-12-03 01:44:58','nosto',5),(40,3,'1012','2022-12-03 01:45:00','nosto',5),(41,3,'1012','2022-12-03 01:45:10','nosto',15),(42,3,'1012','2022-12-03 01:45:37','-tilisiirto',5),(43,2,'1012','2022-12-03 01:45:37','+tilisiirto',5),(44,3,'1012','2022-12-03 01:45:40','nosto',5),(45,3,'1012','2022-12-03 01:46:31','nosto',10);
+INSERT INTO `tilitapahtumat` VALUES (2,2,'1012','2022-11-30 08:59:06','nosto',30),(3,2,'1012','2022-11-30 09:15:25','-tilisiirto',200),(5,2,'1012','2022-11-30 09:21:20','nosto',20),(6,2,'1012','2022-11-30 09:24:24','-tilisiirto',10),(8,2,'1012','2022-11-30 10:39:52','-tilisiirto',10),(9,4,'1012','2022-11-30 10:39:52','+tilisiirto',10),(10,2,'1012','2022-11-30 18:11:32','-tilisiirto',10),(11,4,'1012','2022-11-30 18:11:32','+tilisiirto',10),(12,4,'1014','2022-11-30 19:54:45','-tilisiirto',10),(13,2,'1014','2022-11-30 19:54:45','+tilisiirto',10),(14,3,'1012','2022-11-30 19:56:16','nosto',20),(15,2,'1012','2022-11-30 22:12:37','nosto',20),(16,2,'1012','2022-11-30 22:12:57','nosto',20),(17,2,'1012','2022-11-30 22:15:36','nosto',20),(18,2,'1012','2022-11-30 22:15:58','nosto',20),(19,2,'1012','2022-11-30 22:16:05','nosto',50),(20,2,'1012','2022-11-30 22:17:13','nosto',10),(21,2,'1012','2022-11-30 22:17:26','nosto',20),(22,2,'1012','2022-11-30 22:18:10','nosto',10),(23,2,'1012','2022-11-30 22:18:20','nosto',20),(24,2,'1012','2022-11-30 22:18:33','nosto',20),(25,3,'1012','2022-12-01 06:08:49','-tilisiirto',30),(26,2,'1012','2022-12-01 06:08:49','+tilisiirto',30),(27,2,'1012','2022-12-02 23:08:36','nosto',12),(28,2,'1012','2022-12-02 23:08:44','nosto',7),(29,2,'1012','2022-12-02 23:08:52','nosto',10),(30,2,'1012','2022-12-02 23:09:29','-tilisiirto',20),(31,5,'1012','2022-12-02 23:09:29','+tilisiirto',20),(32,2,'1012','2022-12-02 23:09:39','-tilisiirto',3),(33,4,'1012','2022-12-02 23:09:39','+tilisiirto',3),(34,3,'1012','2022-12-03 01:44:37','nosto',10),(35,3,'1012','2022-12-03 01:44:41','-tilisiirto',20),(36,2,'1012','2022-12-03 01:44:41','+tilisiirto',20),(37,3,'1012','2022-12-03 01:44:52','-tilisiirto',33),(38,2,'1012','2022-12-03 01:44:52','+tilisiirto',33),(39,3,'1012','2022-12-03 01:44:58','nosto',5),(40,3,'1012','2022-12-03 01:45:00','nosto',5),(41,3,'1012','2022-12-03 01:45:10','nosto',15),(42,3,'1012','2022-12-03 01:45:37','-tilisiirto',5),(43,2,'1012','2022-12-03 01:45:37','+tilisiirto',5),(44,3,'1012','2022-12-03 01:45:40','nosto',5),(45,3,'1012','2022-12-03 01:46:31','nosto',10),(46,3,'1012','2022-12-04 16:07:22','nosto',2),(47,2,'1012','2022-12-04 16:07:37','nosto',2),(48,2,'1012','2022-12-04 16:13:48','nosto',2),(49,3,'1012','2022-12-04 16:14:01','nosto',2),(50,2,'1012','2022-12-04 16:25:05','nosto',40),(51,2,'1012','2022-12-04 16:25:36','nosto',40),(52,3,'1012','2022-12-04 16:25:47','nosto',100),(53,3,'1012','2022-12-04 16:25:57','nosto',40),(54,3,'1012','2022-12-04 16:27:31','nosto',500),(55,7,'1013','2022-12-04 16:28:24','nosto',40),(56,9,'1013','2022-12-04 16:28:32','nosto',20),(57,7,'1013','2022-12-04 16:28:37','nosto',100),(58,9,'1013','2022-12-04 16:31:09','nosto',40),(59,9,'1013','2022-12-04 16:36:25','-tilisiirto',20),(60,7,'1013','2022-12-04 16:36:25','+tilisiirto',20),(61,3,'1012','2022-12-04 16:37:20','nosto',2),(62,9,'1013','2022-12-04 16:37:43','nosto',40),(63,9,'1013','2022-12-04 16:38:18','nosto',40),(64,9,'1012','2022-12-04 17:13:20','nosto',2),(65,9,'1013','2022-12-04 17:13:33','-tilisiirto',20),(66,7,'1013','2022-12-04 17:13:33','+tilisiirto',20),(67,9,'1012','2022-12-04 17:35:37','nosto',10),(68,7,'1012','2022-12-04 17:37:30','nosto',10),(69,9,'1012','2022-12-04 17:46:01','-tilisiirto',10),(70,2,'1012','2022-12-04 17:46:01','+tilisiirto',10),(71,4,'1012','2022-12-04 17:47:16','-tilisiirto',10),(72,2,'1012','2022-12-04 17:47:16','+tilisiirto',10);
 /*!40000 ALTER TABLE `tilitapahtumat` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
 -- Dumping routines for database 'pankki'
 --
-/*!50003 DROP PROCEDURE IF EXISTS `credit_nosto` */;
+/*!50003 DROP PROCEDURE IF EXISTS `nosto` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -174,11 +174,17 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `credit_nosto`(IN kortti CHAR(4), IN ekatili_id INT, IN summa DOUBLE )
+CREATE DEFINER=`root`@`localhost` PROCEDURE `nosto`(IN kortti CHAR(4), IN ekatili_id INT, IN summa DOUBLE )
 BEGIN
   DECLARE test1 INT DEFAULT 0;
   START TRANSACTION;
+  IF (select luottoraja from tili where id_tilinumero=ekatili_id >0) THEN 
+  COMMIT;
+  UPDATE tili SET saldo=luottoraja-summa WHERE id_tilinumero=ekatili_id AND summa-saldo <= luottoraja;
+  ELSE 
+COMMIT; 
   UPDATE tili SET saldo=saldo-summa WHERE id_tilinumero=ekatili_id AND summa-saldo <= luottoraja;
+  END IF;
   SET test1=ROW_COUNT();
     IF (test1 > 0) THEN   
       COMMIT;    
@@ -186,13 +192,13 @@ BEGIN
     ELSE
       ROLLBACK;
   END IF;
-  END ;;
+  end ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `credit_tilisiirto` */;
+/*!50003 DROP PROCEDURE IF EXISTS `siirto` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -202,11 +208,17 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `credit_tilisiirto`(IN kortti CHAR(4), IN ekatili_id INT, IN tokatili_id INT, IN summa DOUBLE)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `siirto`(IN kortti CHAR(4), IN ekatili_id INT, IN tokatili_id INT, IN summa DOUBLE)
 BEGIN
   DECLARE test1,test2 INT DEFAULT 0;
   START TRANSACTION;
+  IF (select luottoraja from tili where id_tilinumero=ekatili_id >0) THEN 
+  COMMIT;
   UPDATE tili SET saldo=luottoraja-summa WHERE id_tilinumero=ekatili_id AND summa-saldo <= luottoraja;
+  ELSE 
+COMMIT; 
+  UPDATE tili SET saldo=saldo-summa WHERE id_tilinumero=ekatili_id AND summa-saldo <= luottoraja;
+  END IF;
   SET test1=ROW_COUNT();
   UPDATE tili SET saldo=saldo+summa WHERE id_tilinumero=tokatili_id;
   SET test2=ROW_COUNT();
@@ -217,66 +229,7 @@ BEGIN
     ELSE
       ROLLBACK;
   END IF;
-  END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `debit_nosto` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `debit_nosto`(IN kortti CHAR(4), IN ekatili_id INT, IN summa DOUBLE )
-BEGIN
-  DECLARE test1 INT DEFAULT 0;
-  START TRANSACTION;
-  UPDATE tili SET saldo=saldo-summa WHERE id_tilinumero=ekatili_id AND saldo>=summa;
-  SET test1=ROW_COUNT();
-    IF (test1 > 0) THEN
-      COMMIT;
-      INSERT INTO tilitapahtumat(id_tilinumero,id_kortti,tapahtuma,summa,tapahtuma_aika) VALUES(ekatili_id,kortti,'nosto',summa, NOW());
-    ELSE
-      ROLLBACK;
-  END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `debit_tilisiirto` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `debit_tilisiirto`(IN kortti CHAR(4), IN ekatili_id INT, IN tokatili_id INT, IN summa DOUBLE )
-BEGIN
-  DECLARE test1, test2 INT DEFAULT 0;
-  START TRANSACTION;
-  UPDATE tili SET saldo=saldo-summa WHERE id_tilinumero=ekatili_id AND saldo>=summa;
-  SET test1=ROW_COUNT();
-  UPDATE tili SET saldo=saldo+summa WHERE id_tilinumero=tokatili_id;
-  SET test2=ROW_COUNT();
-    IF (test1 > 0 AND test2 >0) THEN
-      COMMIT;
-      INSERT INTO tilitapahtumat(id_tilinumero,id_kortti,tapahtuma,summa,tapahtuma_aika) VALUES(ekatili_id,kortti,'-tilisiirto',summa, NOW());
-      INSERT INTO tilitapahtumat(id_tilinumero,id_kortti,tapahtuma,summa,tapahtuma_aika) VALUES(tokatili_id,kortti,'+tilisiirto',summa, NOW());
-    ELSE
-      ROLLBACK;
-  END IF;
-END ;;
+  end ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
@@ -292,4 +245,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-12-03 18:05:10
+-- Dump completed on 2022-12-04 19:48:54

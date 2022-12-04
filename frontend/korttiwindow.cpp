@@ -153,7 +153,8 @@ void KorttiWindow::on_btnNostaRahaa_clicked()
 {
     ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Nosto)");
-    ui->label_tiliInfo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili);
+    if (saldo_string == "0") { ui->label_tiliInfo->setText(" Saldo: "+luotto_string+" Tilinumero: "+aTili); }
+    else {ui->label_tiliInfo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
     ui->stackedWidget->setCurrentIndex(3);
     ui->btnReturn->show();
 }
