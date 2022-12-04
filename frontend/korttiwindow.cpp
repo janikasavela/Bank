@@ -46,13 +46,19 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista)
     ui->btn_uudemmat->setEnabled(false);
     QString tulostus="";
 
+    if (lista.length()>0) {
+
     if (uusi_lista.length()>i && uusi_lista.length()>max) {//tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
-        for (int x=i; x<max; x++){              //muuten tulee error
-            tulostus+=uusi_lista[x];
-      }
+            for (int x=i; x<max; x++){              //muuten tulee error
+                tulostus+=uusi_lista[x];  } }
+    else if (lista.length()<10 && lista.length()>0) {
+        for (int x=0; x<lista.length(); x++){
+                    tulostus+=lista[x]; } }
+
         ui->textTilitapahtumat->setText(tulostus);
         ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Saldo: "+saldo_string+" Tilinumero: "+aTili);
     }
+
 
     else {
         //jos tilitapahtumia niin proceduuri päivittää credit tilin saldon, jos niitä ei näy niin saldo on 0
