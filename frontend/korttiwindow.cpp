@@ -218,18 +218,8 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
           luotto_string=luotto[0];
       }
       if(kerrat==1){
-          if(luotto[0]=="0"){
-          ui->labelActiveTili->setText("DEBIT Tili:");
           ui->comboTili->addItem(tilinumero[0]);
-          ui->comboTili->setDisabled(1);
-          aTili=ui->comboTili->itemText(0);
-           }
-          else{
-              ui->labelActiveTili->setText("CREDIT Tili:");
-              ui->comboTili->addItem(tilinumero[0]);
-              ui->comboTili->setDisabled(1);
-              aTili=ui->comboTili->itemText(0);
-          }
+          on_comboTili_activated(0);
           }
 
 
