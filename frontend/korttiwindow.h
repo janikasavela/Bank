@@ -29,8 +29,8 @@ signals:
     void saldo_signal(QByteArray,QString);
 
 public slots:
-    void tulosta_Tilitapahtumat(QStringList,QString,QString,QString);
-    void tulosta_saldo(QStringList,QStringList,QString,QString);
+    void tulosta_Tilitapahtumat(QStringList);
+    void tulosta_saldo(QStringList);
 
 private slots:
     void on_btnTilitapahtumat_clicked();
@@ -43,6 +43,7 @@ private slots:
     void on_comboTili_activated(int index);
     void on_btn_uudemmat_clicked();
     void on_btn_vanhemmat_clicked();
+    void getOmistajaSlot (QNetworkReply *reply);
 
 private:
     Ui::KorttiWindow *ui;
@@ -52,9 +53,10 @@ private:
     QByteArray response_data;
     Tilitapahtumat *objectTilitapahtumat;
     Saldo *objectSaldo;
-    QStringList tilinumero, saldo, luotto, uusi_lista;
-    QString aTili;
+    QStringList tilinumero, saldo, luotto, uusi_lista,tilin_omistaja_tiedot;
+    QString aTili, tilin_omistaja, saldo_string,omistaja_tiedot,luotto_string;
     int max, i;
+    QNetworkAccessManager *korttiManager;
 };
 
 #endif // KORTTIWINDOW_H

@@ -29,6 +29,21 @@ router.get('/',
         }
   );
 
+  router.get('/checkOmistaja/:id?', 
+  function(request, response) {
+        tili.checkOmistaja(request.params.id, function(dbError, dbResult) {
+          if(dbError){
+            response.json(dbError.errno);
+          }
+          else{
+            console.log(dbResult);
+            response.json(dbResult);
+          }
+          }
+        );
+      }
+);
+
 router.get('/:id?',
     function (request, response) {
         tili.getById(request.params.id, function (err, dbResult) {
