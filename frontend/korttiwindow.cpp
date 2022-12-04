@@ -3,6 +3,7 @@
 #include "ui_korttiwindow.h"
 #include "tilitapahtumat.h"
 #include "saldo.h"
+#include "myurl.h"
 
 KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
     QDialog(parent),
@@ -41,23 +42,24 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QSt
     //t채h채n slottiin l채hetet채채n kaikki tilitapahtumien tulostustiedot.
     qDebug()<<"tulosta signaali vastaanotettu tapahtumista";
     uusi_lista=lista;
-
+    ui->textTilitapahtumat->setEnabled(false);
     ui->btn_uudemmat->setEnabled(false);
     QString tulostus="";
 
-    if (uusi_lista.length()>i && uusi_lista.length()>max) //tarkistetaan ett채 tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
+    if (uusi_lista.length()>i && uusi_lista.length()>max) {//tarkistetaan ett채 tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
         for (int x=i; x<max; x++){              //muuten tulee error
             tulostus+=uusi_lista[x];
       }
-    else {
-        tulostus="Ei tilitapahtumia";
-        ui->btn_vanhemmat->setEnabled(false);
+        ui->textTilitapahtumat->setText(tulostus);
+        ui->label_tilitapahtumat->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+tilinumero);
     }
 
-    ui->textTilitapahtumat->setText(tulostus);
+    else {
+        ui->btn_vanhemmat->setEnabled(false);
+        ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Tilin saldo: "+saldo_string);
+        ui->textTilitapahtumat->setText("Ei tilitapahtumia");
+    }
 
-    ui->textTilitapahtumat->setEnabled(false);
-    ui->label_tilitapahtumat->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+tilinumero);
 }
 
 void KorttiWindow::tulosta_saldo(QStringList lista,QStringList omistaja,QString saldo,QString tilinumero)
@@ -65,9 +67,11 @@ void KorttiWindow::tulosta_saldo(QStringList lista,QStringList omistaja,QString 
     //t채h채n slottiin l채hetet채채n kaikki saldo tulostustiedot.
     qDebug()<<"tulosta signaali vastaanotettu saldosta";
     qDebug()<<lista.length();
+    ui->textSaldo->setEnabled(false);
 
     QString tapahtumat,omistajan;
-    omistajan+=omistaja[0];
+
+    if (lista.length()>0) {
 
     if(lista.length()>4) {
     for (int x=0; x<5; x++){
@@ -75,11 +79,12 @@ void KorttiWindow::tulosta_saldo(QStringList lista,QStringList omistaja,QString 
     else if (lista.length()<5 && lista.length()>0) {
         for (int x=0; x<lista.length(); x++){
                     tapahtumat+=lista[x]; } }
-    else { tapahtumat = "Ei tilitapahtumia";}
-
+    omistajan+=omistaja[0];
     ui->textSaldo->setText("Tilin omistajan tiedot: \n"+omistajan+"\n\n"+tapahtumat);
-    ui->textSaldo->setEnabled(false);
-    ui->label_saldo->setText(" Saldo: "+saldo+" Tilinumero: "+tilinumero);
+    ui->label_saldo->setText(" Saldo: "+saldo+" Tilinumero: "+tilinumero);  }
+
+    else {   ui->textSaldo->setText("Tilin omistajan tiedot: \n"+omistaja_tiedot+"\n\nEi tilitapahtumia");
+        ui->label_saldo->setText(" Saldo: "+saldo_string+" Tilinumero: "+tilinumero);    }
 }
 
 void KorttiWindow::on_btnTilitapahtumat_clicked()
@@ -157,7 +162,6 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->comboTili->setEnabled(true);
     i=0;
     max=10;
-
 }
 
 void KorttiWindow::on_btnLogout_clicked()
@@ -190,6 +194,7 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
       }
       else{
           qDebug()<<"yksi tili l철ydetty";
+          saldo_string=saldo[0];
       }
       if(kerrat==1){
           if(luotto[0]=="0"){
@@ -228,11 +233,13 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehd�
         index-=1;
         if(index<0){index=0;}
         aTili=ui->comboTili->itemText(index);
+        saldo_string=saldo[index];
         qDebug()<<"aktiivinen tili: "+aTili;
         ui->stackedWidget->setEnabled(1);
     }
     else{
     aTili=ui->comboTili->itemText(index);
+    saldo_string=saldo[index];
     qDebug()<<"aktiivinen tili: "+aTili;
     }
 
@@ -244,6 +251,15 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehd�
     else{
         ui->labelActiveTili->setText("CREDIT Tili:");
     }
+
+    QString site_url=MyUrl::getBaseUrl()+"/hae_omistaja/"+aTili;
+    QNetworkRequest request((site_url));
+    //WEBTOKEN ALKU
+    request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
+    //WEBTOKEN LOPPU
+    korttiManager = new QNetworkAccessManager(this);
+    connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(getOmistajaSlot(QNetworkReply*)));
+    reply = korttiManager->get(request);
 }
 
 
@@ -294,5 +310,25 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
 
 
    ui->textTilitapahtumat->setText(tulostus);
+}
+
+void KorttiWindow::getOmistajaSlot(QNetworkReply *reply)
+{
+    QByteArray response_data=reply->readAll();
+       QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
+       QJsonArray json_array = json_doc.array();
+
+       QStringList tilin_omistaja_tiedot = {""};
+       tilin_omistaja_tiedot.clear();
+   //siirret채채n haetut tiedot muuttujiin
+       foreach (const QJsonValue &value, json_array) {
+           QJsonObject json_obj = value.toObject();
+           tilin_omistaja=json_obj["tilin omistaja"].toString();
+           tilin_omistaja_tiedot+=json_obj["tilin omistaja"].toString()+"\n"+json_obj["osoite"].toString()+"\n"+json_obj["puhnum"].toString();
+       }
+
+       omistaja_tiedot=tilin_omistaja_tiedot[0];
+       reply->deleteLater();
+       korttiManager->deleteLater();
 }
 

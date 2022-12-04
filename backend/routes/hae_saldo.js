@@ -14,5 +14,17 @@ router.get('/:id', function(request,response){
     })
 });
 
+router.get('/checkOmistaja/:id', function(request,response){
+    const id=request.params.id;
+    tili.checkOmistaja(id,function(err,dbResult){
+        if(err){
+            response.json(err);
+        }
+        else{
+            response.json(dbResult);
+        }
+    })
+});
+
 
 module.exports=router;
