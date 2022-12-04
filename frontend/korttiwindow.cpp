@@ -151,7 +151,9 @@ void KorttiWindow::on_btnSaldo_clicked()
 
 void KorttiWindow::on_btnNostaRahaa_clicked()
 {
+    ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Nosto)");
+    ui->label_tiliInfo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili);
     ui->stackedWidget->setCurrentIndex(3);
     ui->btnReturn->show();
 }
@@ -159,6 +161,7 @@ void KorttiWindow::on_btnNostaRahaa_clicked()
 
 void KorttiWindow::on_btnSiirraRahaa_clicked()
 {
+    ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Siirto)");
     ui->stackedWidget->setCurrentIndex(4);
     ui->btnReturn->show();
@@ -321,28 +324,49 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
     ui->textTilitapahtumat->setText(tulostus);
 }
 
+void KorttiWindow::on_btn20e_clicked(){nostoMaaraPaivitys("20");}
+void KorttiWindow::on_btn40e_clicked(){nostoMaaraPaivitys("40");}
+void KorttiWindow::on_btn60e_clicked(){nostoMaaraPaivitys("60");}
+void KorttiWindow::on_btn100e_clicked(){nostoMaaraPaivitys("100");}
+void KorttiWindow::on_btn200e_clicked(){nostoMaaraPaivitys("200");}
+void KorttiWindow::on_btn500e_clicked(){nostoMaaraPaivitys("500");}
 
-void KorttiWindow::on_btn20e_clicked()
+void KorttiWindow::on_btnXe_clicked()
 {
-    ui->lineNostoMaara->setText("20");
-    ui->btnNosta->setEnabled(1);
+    bool ok;
+    int ii = QInputDialog::getInt(this,"Nosto","0-"+saldo_string, 1, 1, saldo_string.toInt(), 1, &ok);
+    if (ok){nostoMaaraPaivitys(QString::number(ii));}
 }
 
-
-void KorttiWindow::on_btn40e_clicked()
+void KorttiWindow::on_btnTyhjenna_clicked()
 {
-
-}
-
-
-void KorttiWindow::on_btn60e_clicked()
-{
-
+    ui->lineNostoMaara->clear();
+    ui->btnNosta->setDisabled(1);
+    ui->btnTyhjenna->setDisabled(1);
 }
 
 void KorttiWindow::on_btnNosta_clicked()
 {
+    qDebug()<<"nostetaan "+ui->lineNostoMaara->text();
+    //
+    //nosto osuus
+    QString site_url=MyUrl::getBaseUrl()+"/tili/nosto/";
+    QNetworkRequest request((site_url));
+    //WEBTOKEN ALKU
+    request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
+    //WEBTOKEN LOPPU
+    korttiManager = new QNetworkAccessManager(this);
+    connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(tiliOperaatio(QNetworkReply*)));
+    reply = korttiManager->get(request);
+    //
+    on_btnTyhjenna_clicked();
+}
 
+void KorttiWindow::nostoMaaraPaivitys(QString maara)
+{
+    ui->lineNostoMaara->setText(maara);
+    ui->btnNosta->setEnabled(1);
+    ui->btnTyhjenna->setEnabled(1);
 }
 
 void KorttiWindow::getOmistajaSlot(QNetworkReply *reply)
