@@ -15,7 +15,7 @@ public:
     explicit Saldo(QString id_kortti, QObject *parent = nullptr);
 
 signals:
-    void saldo_nayta(QStringList,QStringList,QString,QString);
+    void saldo_nayta(QStringList);
 
 protected slots:
 void saldoSlot (QNetworkReply *reply);
@@ -29,8 +29,8 @@ private:
 QNetworkAccessManager *saldoManager;
 QNetworkReply *reply;
 QByteArray response_data;
-QString saldo, tilinumero;
-QStringList tapahtumat,tilinOmistaja;
+QString tilinumero;
+QStringList tapahtumat;
 };
 
 #endif // SALDO_H

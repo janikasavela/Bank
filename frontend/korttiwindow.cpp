@@ -37,7 +37,7 @@ void KorttiWindow::setWebToken(const QByteArray &newWebToken)
     webToken = newWebToken;
 }
 
-void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QString saldo,QString tilinumero)
+void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista)
 {
     //tähän slottiin lähetetään kaikki tilitapahtumien tulostustiedot.
     qDebug()<<"tulosta signaali vastaanotettu tapahtumista";
@@ -51,25 +51,29 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista,QString omistaja,QSt
             tulostus+=uusi_lista[x];
       }
         ui->textTilitapahtumat->setText(tulostus);
-        ui->label_tilitapahtumat->setText("Tilin omistaja: "+omistaja+" Saldo: "+saldo+" Tilinumero: "+tilinumero);
+        ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Saldo: "+saldo_string+" Tilinumero: "+aTili);
     }
 
     else {
+        //jos tilitapahtumia niin proceduuri päivittää credit tilin saldon, jos niitä ei näy niin saldo on 0
+        //laitetaan tässä näkymään saldo siinätapauksessa käytettävissä olevana luoton määränä
+        if (saldo_string == "0") { ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Tilin saldo: "+luotto_string); }
+        else { ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Tilin saldo: "+saldo_string); }
+
         ui->btn_vanhemmat->setEnabled(false);
-        ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Tilin saldo: "+saldo_string);
         ui->textTilitapahtumat->setText("Ei tilitapahtumia");
     }
 
 }
 
-void KorttiWindow::tulosta_saldo(QStringList lista,QStringList omistaja,QString saldo,QString tilinumero)
+void KorttiWindow::tulosta_saldo(QStringList lista)
 {
     //tähän slottiin lähetetään kaikki saldo tulostustiedot.
     qDebug()<<"tulosta signaali vastaanotettu saldosta";
     qDebug()<<lista.length();
     ui->textSaldo->setEnabled(false);
 
-    QString tapahtumat,omistajan;
+    QString tapahtumat;
 
     if (lista.length()>0) {
 
@@ -79,12 +83,15 @@ void KorttiWindow::tulosta_saldo(QStringList lista,QStringList omistaja,QString 
     else if (lista.length()<5 && lista.length()>0) {
         for (int x=0; x<lista.length(); x++){
                     tapahtumat+=lista[x]; } }
-    omistajan+=omistaja[0];
-    ui->textSaldo->setText("Tilin omistajan tiedot: \n"+omistajan+"\n\n"+tapahtumat);
-    ui->label_saldo->setText(" Saldo: "+saldo+" Tilinumero: "+tilinumero);  }
+
+    ui->textSaldo->setText("Tilin omistajan tiedot: \n"+omistaja_tiedot+"\n\n"+tapahtumat);
+    ui->label_saldo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili);  }
 
     else {   ui->textSaldo->setText("Tilin omistajan tiedot: \n"+omistaja_tiedot+"\n\nEi tilitapahtumia");
-        ui->label_saldo->setText(" Saldo: "+saldo_string+" Tilinumero: "+tilinumero);    }
+
+        if (saldo_string == "0") { ui->label_saldo->setText(" Saldo: "+luotto_string+" Tilinumero: "+aTili);   }
+        else {ui->label_saldo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili);}
+    }
 }
 
 void KorttiWindow::on_btnTilitapahtumat_clicked()
@@ -100,8 +107,8 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
             objectTilitapahtumat, SLOT(tilitapahtumat_clicked(QByteArray,QString)) );
 
     //yhdistetään signaali jonka mukana viedään tiedot tilitapahtumista tänne korttiwindowin tilitapahtumien tulostus slottiin
-    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QStringList,QString,QString,QString)),
-            this, SLOT(tulosta_Tilitapahtumat(QStringList,QString,QString,QString)), Qt::DirectConnection);
+    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QStringList)),
+            this, SLOT(tulosta_Tilitapahtumat(QStringList)), Qt::DirectConnection);
 
     //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
     emit tilitapahtumat(webToken,aTili);
@@ -125,8 +132,8 @@ void KorttiWindow::on_btnSaldo_clicked()
             objectSaldo, SLOT(saldo_clicked(QByteArray,QString)) );
 
     //yhdistetään signaali jonka mukana viedään tiedot tilitapahtumista tänne korttiwindowin tilitapahtumien tulostus slottiin
-    connect(objectSaldo,SIGNAL(saldo_nayta(QStringList,QStringList,QString,QString)),
-            this, SLOT(tulosta_saldo(QStringList,QStringList,QString,QString)), Qt::DirectConnection);
+    connect(objectSaldo,SIGNAL(saldo_nayta(QStringList)),
+            this, SLOT(tulosta_saldo(QStringList)), Qt::DirectConnection);
 
     //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
     emit saldo_signal(webToken,aTili);
@@ -195,6 +202,7 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
       else{
           qDebug()<<"yksi tili löydetty";
           saldo_string=saldo[0];
+          luotto_string=luotto[0];
       }
       if(kerrat==1){
           if(luotto[0]=="0"){
@@ -234,12 +242,14 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehd�
         if(index<0){index=0;}
         aTili=ui->comboTili->itemText(index);
         saldo_string=saldo[index];
+        luotto_string=luotto[index];
         qDebug()<<"aktiivinen tili: "+aTili;
         ui->stackedWidget->setEnabled(1);
     }
     else{
     aTili=ui->comboTili->itemText(index);
     saldo_string=saldo[index];
+    luotto_string=luotto[index];
     qDebug()<<"aktiivinen tili: "+aTili;
     }
 
