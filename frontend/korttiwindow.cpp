@@ -186,6 +186,13 @@ void KorttiWindow::on_btnLogout_clicked()
 
 void KorttiWindow::tilitSlot(QNetworkReply *reply)
 {
+    //tilioperaatioiden alustus
+    //objectTilioperaatio = new tilioperaatio(aTili);
+    //connect(this,SIGNAL(hae_tiliInfo(QByteArray,QString)),objectTilioperaatio, SLOT(tilioperaatio_info(QByteArray,QString)));
+    //connect(objectTilioperaatio,SIGNAL(vie_asiakas_info(QString,QString)), this, SLOT(tuo_asiakas_info(QString,QString)));
+    //connect(ui->btnNosta,SIGNAL(clicked()),objectTilioperaatio, SLOT(nostoSlot(QNetworkReply *reply)));
+    //tilioperaatioiden alustus END
+
    //Haetaan kaikki tilit johon kortin haltijalla on oikeus
 
    QByteArray response_data=reply->readAll();
@@ -212,11 +219,11 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
       }
       if(kerrat==1){
           if(luotto[0]=="0"){
-              ui->labelActiveTili->setText("DEBIT Tili:");
+          ui->labelActiveTili->setText("DEBIT Tili:");
           ui->comboTili->addItem(tilinumero[0]);
           ui->comboTili->setDisabled(1);
           aTili=ui->comboTili->itemText(0);
-          }
+           }
           else{
               ui->labelActiveTili->setText("CREDIT Tili:");
               ui->comboTili->addItem(tilinumero[0]);
@@ -260,7 +267,6 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehdÃ
     }
 
     //Tarkistetaan onko valittu tili Credit vai Debit
-
     if(luotto[index]=="0"){
         ui->labelActiveTili->setText("DEBIT Tili:");
     }
@@ -322,10 +328,31 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
            tulostus+=uusi_lista[x];
    } ui->btn_vanhemmat->setEnabled(false);
     }
+    ui->textTilitapahtumat->setText(tulostus);
+}
 
 
+void KorttiWindow::on_btn20e_clicked()
+{
+    ui->lineNostoMaara->setText("20");
+    ui->btnNosta->setEnabled(1);
+}
 
-   ui->textTilitapahtumat->setText(tulostus);
+
+void KorttiWindow::on_btn40e_clicked()
+{
+
+}
+
+
+void KorttiWindow::on_btn60e_clicked()
+{
+
+}
+
+void KorttiWindow::on_btnNosta_clicked()
+{
+
 }
 
 void KorttiWindow::getOmistajaSlot(QNetworkReply *reply)

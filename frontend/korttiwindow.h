@@ -45,6 +45,15 @@ private slots:
     void on_btn_vanhemmat_clicked();
     void getOmistajaSlot (QNetworkReply *reply);
 
+
+    void on_btn20e_clicked();
+
+    void on_btn40e_clicked();
+
+    void on_btn60e_clicked();
+
+    void on_btnNosta_clicked();
+
 private:
     Ui::KorttiWindow *ui;
     QByteArray webToken;
