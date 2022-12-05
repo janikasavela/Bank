@@ -58,6 +58,8 @@ private slots:
     void on_btnNosta_clicked();
     void on_btnTyhjenna_clicked();
 
+    void on_btnSiirto_clicked();
+
 private:
     Ui::KorttiWindow *ui;
     QByteArray webToken;

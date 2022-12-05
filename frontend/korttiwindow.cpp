@@ -166,6 +166,14 @@ void KorttiWindow::on_btnSiirraRahaa_clicked()
     ui->labelidkortti->setText(kortti+" (Siirto)");
     ui->stackedWidget->setCurrentIndex(4);
     ui->btnReturn->show();
+    for(i=0;i<tilinumero.size();i++){
+        if(tilinumero[i]==aTili){
+            //ei lisätä aktiivista tiliä
+        }
+        else{
+            ui->comboSiirtoTili->addItem(tilinumero[i]);
+        }
+    }
 }
 
 
@@ -177,6 +185,7 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->textTilitapahtumat->clear();
     ui->textSaldo->clear();
     if(tilinumero.size()>1){ui->comboTili->setEnabled(true);}
+    ui->comboSiirtoTili->clear();
     i=0;
     max=10;
 }
@@ -206,8 +215,11 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
       }
       if(tilinumero.size()>1){qDebug()<<"useampi tili löydetty";}
       else{qDebug()<<"yksi tili löydetty";}
-      if(tilinumero.size()==1){ui->comboTili->setDisabled(1);}
-      on_comboTili_activated(0);    //kutsutaan
+      if(tilinumero.size()==1){
+          ui->comboTili->setDisabled(1);
+          ui->btnSiirraRahaa->setDisabled(1);
+      }
+      on_comboTili_activated(0);    //kutsutaan jotta saadaan tarvittavat tilitiedot haettua
 }
 
 void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehdään valinta
@@ -394,3 +406,27 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
         QMessageBox::critical(this,"Virhe","Virhe nostoyhteydessä");
     }
 }
+
+void KorttiWindow::on_btnSiirto_clicked()
+{
+    qDebug()<<"popupikkuna rahamäärälle";
+    qDebug()<<"jonka jälkeen varmistetaan siirto ja palataan alkunäkymään";
+    bool ok;
+    int ii;
+    if(bluotto){ii=QInputDialog::getInt(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(luotto_string.toInt()-saldo_string.toInt()), 0, 0, luotto_string.toInt()-saldo_string.toInt(), 1, &ok);}
+    else{ii=QInputDialog::getInt(this,"Siirto","Paljonko Siirretään?\n0-"+saldo_string, 0, 0, saldo_string.toInt(), 1, &ok);}
+    if (ok){if(ii>0){
+            QMessageBox msgBox;
+            msgBox.setText("Siirto");
+            msgBox.setInformativeText("Olet siirtämässä tililtä "+aTili+" tilille "+ui->comboSiirtoTili->currentText()+" yhteensä "+QString::number(ii)+"e.\nOletko Varma?");
+            //msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            QAbstractButton* pButtonYes = msgBox.addButton("Kyllä",QMessageBox::YesRole);
+            QAbstractButton* pButtonNo = msgBox.addButton("Ei",QMessageBox::NoRole);
+            msgBox.setDefaultButton(QMessageBox::No);
+            msgBox.exec();
+            if(msgBox.clickedButton()==pButtonYes) {qDebug()<<"Kylla";}
+            if(msgBox.clickedButton()==pButtonNo) {qDebug()<<"Ei";}
+        };}
+    on_btnReturn_clicked();
+}
+
