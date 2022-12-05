@@ -81,6 +81,21 @@ function(request, response) {
   });
 });
 
+router.get('/checkAsiakas/:id?', 
+function(request, response) {
+      tili.checkAsiakas(request.params.id, function(dbError, dbResult) {
+        if(dbError){
+          response.json(dbError.errno);
+        }
+        else{
+          console.log(dbResult);
+          response.json(dbResult);
+        }
+        }
+      );
+    }
+);
+
 
 router.delete('/:id', 
 function(request, response) {

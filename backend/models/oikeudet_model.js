@@ -7,6 +7,9 @@ const oikeudet = {
   getAll: function(callback) {
     return db.query('select * from oikeudet', callback);
   },
+  deleteOikeudet: function(id, callback) {
+    return db.query('delete from oikeudet where id_kortti=?', [id], callback);
+  },
   add: function(add_data, callback) {
     return db.query(
       'insert into oikeudet (id_kortti, id_tilinumero) values(?,?)',
