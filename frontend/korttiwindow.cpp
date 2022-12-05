@@ -370,6 +370,20 @@ void KorttiWindow::getOmistajaSlot(QNetworkReply *reply)
        omistaja_tiedot=tilin_omistaja_tiedot[0];
        reply->deleteLater();
        korttiManager->deleteLater();
+
+       int i=0;
+             if(i==0){
+
+                 QString site_url=MyUrl::getBaseUrl()+"/tili/checkAsiakas/"+kortti;
+                 QNetworkRequest request((site_url));
+                 //WEBTOKEN ALKU
+                 request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
+                 //WEBTOKEN LOPPU
+                 korttiManager = new QNetworkAccessManager(this);
+                 connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(getAsiakasSlot(QNetworkReply*)),Qt::QueuedConnection);
+                 reply = korttiManager->get(request);
+             }
+
 }
 
 void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
@@ -482,4 +496,20 @@ void KorttiWindow::saldoSlot(QNetworkReply *reply)
 
         reply->deleteLater();
         korttiManager->deleteLater();
+}
+
+void KorttiWindow::getAsiakasSlot(QNetworkReply *reply)
+{  qDebug()<<"ASIAKAS";
+       QByteArray response_data=reply->readAll();
+       QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
+       QJsonArray json_array = json_doc.array();
+
+       foreach (const QJsonValue &value, json_array) {
+           QJsonObject json_obj = value.toObject();
+           kortin_omistaja=json_obj["kortin omistaja"].toString();
+       }
+       reply->deleteLater();
+       korttiManager->deleteLater();
+       qDebug()<<kortin_omistaja;
+       ui->label_valikko->setText("Kortin omistaja: "+kortin_omistaja);
 }

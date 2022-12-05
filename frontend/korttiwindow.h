@@ -58,6 +58,7 @@ private slots:
     void on_btnTyhjenna_clicked();
     void tilitapahtumatSlot (QNetworkReply *reply);
     void saldoSlot (QNetworkReply *reply);
+    void getAsiakasSlot(QNetworkReply *reply);
 
     void on_btnSiirto_clicked();
 
@@ -68,7 +69,7 @@ private:
     QNetworkReply *reply;
     QByteArray response_data;
     QStringList tilinumero, saldo, luotto, uusi_lista, tilin_omistaja_tiedot, tapahtumat;
-    QString aTili, tilin_omistaja, saldo_string,omistaja_tiedot,luotto_string, maara;
+    QString aTili, tilin_omistaja, saldo_string,omistaja_tiedot,luotto_string, maara, kortin_omistaja;
     bool bluotto;
     int max, i;
     QNetworkAccessManager *korttiManager;
