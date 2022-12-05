@@ -176,7 +176,7 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->btnReturn->hide();
     ui->textTilitapahtumat->clear();
     ui->textSaldo->clear();
-    ui->comboTili->setEnabled(true);
+    if(tilinumero.size()>1){ui->comboTili->setEnabled(true);}
     i=0;
     max=10;
 }
@@ -195,7 +195,6 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
    QByteArray response_data=reply->readAll();
    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
    QJsonArray json_array = json_doc.array();
-   int kerrat=0;
 
   //siirretään haetut tiedot QStringListiin
       foreach (const QJsonValue &value, json_array) {
@@ -203,55 +202,21 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
           luotto+=QString::number(json_obj["luottoraja"].toInt());
           saldo+=QString::number(json_obj["saldo"].toInt());
           tilinumero+=QString::number(json_obj["id_tilinumero"].toInt());
-          kerrat+=1;    //lasketaan tilien määrä
+          ui->comboTili->addItem(QString::number(json_obj["id_tilinumero"].toInt()));
       }
-
-      if(kerrat>1){
-          qDebug()<<"useampi tili löydetty";
-      }
-      else{
-          qDebug()<<"yksi tili löydetty";
-          saldo_string=saldo[0];
-          luotto_string=luotto[0];
-      }
-      if(kerrat==1){
-          ui->comboTili->addItem(tilinumero[0]);
-          on_comboTili_activated(0);
-          }
-
-
-      else{
-          ui->comboTili->addItem("VALITSE TILI");
-          ui->labelActiveTili->setText("Valitse Tili");
-          ui->stackedWidget->setDisabled(1);
-          for(int i= 0; i < kerrat; i++){
-          if(luotto[i]==0){
-          ui->comboTili->addItem(tilinumero[i]);
-      }
-          else{
-              ui->comboTili->addItem(tilinumero[i]);
-          }}}
+      if(tilinumero.size()>1){qDebug()<<"useampi tili löydetty";}
+      else{qDebug()<<"yksi tili löydetty";}
+      if(tilinumero.size()==1){ui->comboTili->setDisabled(1);}
+      on_comboTili_activated(0);    //kutsutaan
 }
 
 void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehdään valinta
 {
-    //Poistetaan väliaikainen arvo (varmaan parempikin tapa olemassa mutta tämä toimii tällä hetkellä)
-    if(ui->comboTili->itemText(0)==("VALITSE TILI")){
-        ui->comboTili->removeItem(0);
-        index-=1;
-        if(index<0){index=0;}
-        aTili=ui->comboTili->itemText(index);
-        saldo_string=saldo[index];
-        luotto_string=luotto[index];
-        qDebug()<<"aktiivinen tili: "+aTili;
-        ui->stackedWidget->setEnabled(1);
-    }
-    else{
+    if(tilinumero[index]!=aTili){
     aTili=ui->comboTili->itemText(index);
     saldo_string=saldo[index];
     luotto_string=luotto[index];
     qDebug()<<"aktiivinen tili: "+aTili;
-    }
 
     //Tarkistetaan onko valittu tili Credit vai Debit
     if(luotto[index]=="0"){
@@ -271,6 +236,7 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehd�
     korttiManager = new QNetworkAccessManager(this);
     connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(getOmistajaSlot(QNetworkReply*)));
     reply = korttiManager->get(request);
+    }
 }
 
 
@@ -428,4 +394,3 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
         QMessageBox::critical(this,"Virhe","Virhe nostoyhteydessä");
     }
 }
-
