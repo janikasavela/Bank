@@ -39,6 +39,10 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList tapahtumat)
     uusi_lista=tapahtumat;
     ui->textTilitapahtumat->setEnabled(false);
     ui->btn_uudemmat->setEnabled(false);
+
+    if (bluotto) { ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Luottoa jäljellä: "+QString::number(luotto_string.toInt()-saldo_string.toInt())+" Tilinumero: "+aTili); }
+    else {ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
+
     QString tulostus="";
 
     if (uusi_lista.length()>0) {
@@ -52,16 +56,10 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList tapahtumat)
                     tulostus+=uusi_lista[x]; } }
 
         ui->textTilitapahtumat->setText(tulostus);
-        ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Saldo: "+saldo_string+" Tilinumero: "+aTili);
     }
 
 
     else {
-        //jos tilitapahtumia niin proceduuri päivittää credit tilin saldon, jos niitä ei näy niin saldo on 0
-        //laitetaan tässä näkymään saldo siinätapauksessa käytettävissä olevana luoton määränä
-        if (saldo_string == "0") { ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Tilin saldo: "+luotto_string); }
-        else { ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Tilin saldo: "+saldo_string); }
-
         ui->btn_vanhemmat->setEnabled(false);
         ui->textTilitapahtumat->setText("Ei tilitapahtumia");
     }
@@ -74,6 +72,8 @@ void KorttiWindow::tulosta_saldo(QStringList lista)
     qDebug()<<"tulosta signaali vastaanotettu saldosta";
     qDebug()<<lista.length();
     ui->textSaldo->setEnabled(false);
+    if (bluotto) { ui->label_saldo->setText("Luottoa jäljellä: "+QString::number(luotto_string.toInt()-saldo_string.toInt())+" Tilinumero: "+aTili); }
+    else {ui->label_saldo->setText("Saldo: "+saldo_string+" Tilinumero: "+aTili); }
 
     QString tapahtumat;
 
@@ -87,12 +87,9 @@ void KorttiWindow::tulosta_saldo(QStringList lista)
                     tapahtumat+=lista[x]; } }
 
     ui->textSaldo->setText("Tilin omistajan tiedot: \n"+omistaja_tiedot+"\n\n"+tapahtumat);
-    ui->label_saldo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili);  }
+   }
 
     else {   ui->textSaldo->setText("Tilin omistajan tiedot: \n"+omistaja_tiedot+"\n\nEi tilitapahtumia");
-
-        if (saldo_string == "0") { ui->label_saldo->setText(" Saldo: "+luotto_string+" Tilinumero: "+aTili);   }
-        else {ui->label_saldo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili);}
     }
 }
 
