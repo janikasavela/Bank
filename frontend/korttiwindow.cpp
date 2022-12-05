@@ -1,8 +1,6 @@
 #include "korttiwindow.h"
 #include "qdebug.h"
 #include "ui_korttiwindow.h"
-#include "tilitapahtumat.h"
-#include "saldo.h"
 #include "myurl.h"
 
 KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
@@ -21,10 +19,6 @@ KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
 KorttiWindow::~KorttiWindow()
 {
     delete ui;
-    delete objectTilitapahtumat;
-    objectTilitapahtumat = nullptr;
-    delete objectSaldo;
-    objectSaldo = nullptr;
 }
 
 const QByteArray &KorttiWindow::getWebToken() const
@@ -37,23 +31,25 @@ void KorttiWindow::setWebToken(const QByteArray &newWebToken)
     webToken = newWebToken;
 }
 
-void KorttiWindow::tulosta_Tilitapahtumat(QStringList lista)
+void KorttiWindow::tulosta_Tilitapahtumat(QStringList tapahtumat)
 {
     //tähän slottiin lähetetään kaikki tilitapahtumien tulostustiedot.
     qDebug()<<"tulosta signaali vastaanotettu tapahtumista";
-    uusi_lista=lista;
+    qDebug()<<tapahtumat;
+    uusi_lista=tapahtumat;
     ui->textTilitapahtumat->setEnabled(false);
     ui->btn_uudemmat->setEnabled(false);
     QString tulostus="";
 
-    if (lista.length()>0) {
+    if (uusi_lista.length()>0) {
 
     if (uusi_lista.length()>i && uusi_lista.length()>max) {//tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
             for (int x=i; x<max; x++){              //muuten tulee error
                 tulostus+=uusi_lista[x];  } }
-    else if (lista.length()<10 && lista.length()>0) {
-        for (int x=0; x<lista.length(); x++){
-                    tulostus+=lista[x]; } }
+    else if (uusi_lista.length()<10 && uusi_lista.length()>0) {
+        ui->btn_vanhemmat->setEnabled(false);
+        for (int x=0; x<uusi_lista.length(); x++){
+                    tulostus+=uusi_lista[x]; } }
 
         ui->textTilitapahtumat->setText(tulostus);
         ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Saldo: "+saldo_string+" Tilinumero: "+aTili);
@@ -106,24 +102,19 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
     ui->stackedWidget->setCurrentIndex(2);
     ui->btnReturn->show();
 
-    qDebug()<<webToken;
+       QString site_url=MyUrl::getBaseUrl()+"/selaa_tilitapahtumia/"+aTili;
+       QNetworkRequest request((site_url));
+       //WEBTOKEN ALKU
+       request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
+       //WEBTOKEN LOPPU
+       korttiManager = new QNetworkAccessManager(this);
 
-    objectTilitapahtumat = new Tilitapahtumat(kortti); //luodaan koosteyhteys tilitapahtumat luokkaan
-    connect(this,SIGNAL(tilitapahtumat(QByteArray,QString)),   //yhdistetään signaali tästä tilitapahtumien alustus slottiin, signaalin mukana webtoken
-            objectTilitapahtumat, SLOT(tilitapahtumat_clicked(QByteArray,QString)) );
+       connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(tilitapahtumatSlot(QNetworkReply*)));
 
-    //yhdistetään signaali jonka mukana viedään tiedot tilitapahtumista tänne korttiwindowin tilitapahtumien tulostus slottiin
-    connect(objectTilitapahtumat,SIGNAL(tilitapahtumat_nayta(QStringList)),
-            this, SLOT(tulosta_Tilitapahtumat(QStringList)), Qt::DirectConnection);
-
-    //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
-    emit tilitapahtumat(webToken,aTili);
+       reply = korttiManager->get(request);
 
     ui->btn_uudemmat->setEnabled(false);
     ui->btn_vanhemmat->setEnabled(true);
-    qDebug()<<"tili signal lähetetty";
-
-
 }
 
 
@@ -133,18 +124,17 @@ void KorttiWindow::on_btnSaldo_clicked()
     ui->stackedWidget->setCurrentIndex(1);
     ui->btnReturn->show();
 
-    objectSaldo = new Saldo(kortti); //luodaan koosteyhteys tilitapahtumat luokkaan
-    connect(this,SIGNAL(saldo_signal(QByteArray,QString)),   //yhdistetään signaali tästä tilitapahtumien alustus slottiin, signaalin mukana webtoken
-            objectSaldo, SLOT(saldo_clicked(QByteArray,QString)) );
 
-    //yhdistetään signaali jonka mukana viedään tiedot tilitapahtumista tänne korttiwindowin tilitapahtumien tulostus slottiin
-    connect(objectSaldo,SIGNAL(saldo_nayta(QStringList)),
-            this, SLOT(tulosta_saldo(QStringList)), Qt::DirectConnection);
+    QString site_url=MyUrl::getBaseUrl()+"/selaa_tilitapahtumia/"+aTili;
+    QNetworkRequest request((site_url));
+    //WEBTOKEN ALKU
+    request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
+    //WEBTOKEN LOPPU
+    korttiManager = new QNetworkAccessManager(this);
 
-    //lähetetään signaali tilitapahtumien alustus slottiin niin saadaan tilitapahtumien haku käyntiin
-    emit saldo_signal(webToken,aTili);
+    connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(saldoSlot(QNetworkReply*)));
 
-    qDebug()<<"saldo signal lähetetty";
+    reply = korttiManager->get(request);
 
 }
 
@@ -429,3 +419,66 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
     }
 }
 
+void KorttiWindow::tilitapahtumatSlot(QNetworkReply *reply)
+{
+    //response_data=reply->readAll();
+    //qDebug()<<response_data;
+
+     QByteArray response_data=reply->readAll();
+        QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
+        QJsonArray json_array = json_doc.array();
+
+         QStringList tapahtumat = {""};
+         tapahtumat.clear();
+
+    //siirretään haetut tiedot muuttujiin
+        foreach (const QJsonValue &value, json_array) {
+            QJsonObject json_obj = value.toObject();
+            tapahtumat+="Tapahtuma: "+json_obj["tapahtuma"].toString()+" "+"Paiva: "+json_obj["paiva"].toString()+" "+"Aika: "+json_obj["aika"].toString()+" "+"Summa: "+QString::number(json_obj["summa"].toInt())+"\r";
+        }
+
+        qDebug()<<"\n"<<tapahtumat;
+
+        qDebug()<<"lahetan nayta signal";
+        qDebug()<<"TAPAHTUMAT TULOSTEETTUUUUUUU  \n";
+
+        //yhdistetään signaali
+        connect(this,SIGNAL(tilitapahtumat_nayta(QStringList)),
+                this, SLOT(tulosta_Tilitapahtumat(QStringList)), Qt::DirectConnection);
+
+        emit tilitapahtumat_nayta(tapahtumat); //lähetetään haetut tiedot tilitapahtumien tulostus slottiin korttiwindowille.
+
+        reply->deleteLater();
+        korttiManager->deleteLater();
+}
+
+void KorttiWindow::saldoSlot(QNetworkReply *reply)
+{
+    //response_data=reply->readAll();
+    //qDebug()<<response_data;
+
+     QByteArray response_data=reply->readAll();
+        QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
+        QJsonArray json_array = json_doc.array();
+
+        QStringList tapahtumat = {""};
+        tapahtumat.clear();
+
+    //siirretään haetut tiedot muuttujiin
+        foreach (const QJsonValue &value, json_array) {
+            QJsonObject json_obj = value.toObject();
+            tapahtumat+="Tapahtuma: "+json_obj["tapahtuma"].toString()+" "+"Paiva: "+json_obj["paiva"].toString()+" "+"Aika: "+json_obj["aika"].toString()+" "+"Summa: "+QString::number(json_obj["summa"].toInt())+"\r";
+        }
+
+        qDebug()<<"\n"<<tapahtumat;
+
+        qDebug()<<"lahetan nayta signal";
+        qDebug()<<"TAPAHTUMAT TULOSTEETTUUUUUUU  \n";
+        //yhdistetään signaali
+        connect(this,SIGNAL(saldo_nayta(QStringList)),
+                this, SLOT(tulosta_saldo(QStringList)), Qt::DirectConnection);
+        emit saldo_nayta(tapahtumat); //lähetetään haetut tiedot tilitapahtumien tulostus slottiin korttiwindowille.
+
+        reply->deleteLater();
+        korttiManager->deleteLater();
+}
