@@ -5,8 +5,6 @@
 #include <QtNetwork>
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
-#include "tilitapahtumat.h"
-#include <saldo.h>
 #include <QMessageBox>
 #include <QInputDialog>
 
@@ -27,8 +25,9 @@ public:
 
 signals:
     void timeout(); //yhdistety uloskirjautumisen slottiin
-    void tilitapahtumat(QByteArray,QString);
     void saldo_signal(QByteArray,QString);
+    void tilitapahtumat_nayta(QStringList);
+    void saldo_nayta(QStringList);
 
 public slots:
     void tulosta_Tilitapahtumat(QStringList);
@@ -57,6 +56,8 @@ private slots:
     void on_btnXe_clicked();
     void on_btnNosta_clicked();
     void on_btnTyhjenna_clicked();
+    void tilitapahtumatSlot (QNetworkReply *reply);
+    void saldoSlot (QNetworkReply *reply);
 
     void on_btnSiirto_clicked();
 
@@ -66,13 +67,12 @@ private:
     QString kortti;
     QNetworkReply *reply;
     QByteArray response_data;
-    Tilitapahtumat *objectTilitapahtumat;
-    Saldo *objectSaldo;
-    QStringList tilinumero, saldo, luotto, uusi_lista,tilin_omistaja_tiedot;
+    QStringList tilinumero, saldo, luotto, uusi_lista, tilin_omistaja_tiedot, tapahtumat;
     QString aTili, tilin_omistaja, saldo_string,omistaja_tiedot,luotto_string, maara;
     bool bluotto;
     int max, i;
     QNetworkAccessManager *korttiManager;
+
 };
 
 #endif // KORTTIWINDOW_H
