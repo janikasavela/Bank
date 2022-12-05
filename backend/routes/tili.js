@@ -99,7 +99,28 @@ function(request, response) {
     if (err) {
       response.json(err);
     } else {
+      if(dbResult.affectedRows>0){
       response.send(true);
+      }
+      else{
+        response.send(false);
+      }
+    }
+  });
+});
+router.post('/siirto/', 
+function(request, response) {
+  //console.log(request.body);
+  tili.siirto(request.body, function(err, dbResult) {
+    if (err) {
+      response.json(err);
+    } else {
+      if(dbResult.affectedRows>0){
+      response.send(true);
+      }
+      else{
+        response.send(false);
+      }
     }
   });
 });

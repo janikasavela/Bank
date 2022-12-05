@@ -36,7 +36,11 @@ const tili = {
      },  
   nosto: function(update_data, callback) {
     return db.query(
-      'CALL nosto(?, ?, ?);',[update_data.id_kortti, update_data.id_tilinumero, update_data.maara],callback);
+      'CALL nosto(?, ?, ?)',[update_data.id_kortti, update_data.id_tilinumero, update_data.maara],callback);
+     },
+  siirto: function(siirto_data, callback){
+    return db.query(
+      'CALL siirto(?, ?, ?, ?)',[siirto_data.id_kortti, siirto_data.id_miinustili, siirto_data.id_plustili, siirto_data.maara],callback);
      }
 };
 module.exports = tili;

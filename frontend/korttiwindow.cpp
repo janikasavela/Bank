@@ -414,10 +414,27 @@ void KorttiWindow::on_btnSiirto_clicked()
             QAbstractButton* pButtonNo = msgBox.addButton("Ei",QMessageBox::NoRole);
             msgBox.setDefaultButton(QMessageBox::No);
             msgBox.exec();
-            if(msgBox.clickedButton()==pButtonYes) {qDebug()<<"Kylla";}
+            if(msgBox.clickedButton()==pButtonYes) {qDebug()<<"Kylla";
+                //nosto osuus
+                qDebug()<<kortti+" "+aTili+" "+ui->comboSiirtoTili->currentText();
+                QJsonObject jsonObj;
+                jsonObj.insert("id_kortti",kortti);
+                jsonObj.insert("id_miinustili",aTili);
+                jsonObj.insert("id_plustili",ui->comboSiirtoTili->currentText());
+                jsonObj.insert("maara",ii);
+                QString site_url=MyUrl::getBaseUrl()+"/tili/siirto/";
+                QNetworkRequest request((site_url));
+                request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+                //WEBTOKEN ALKU
+                request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
+                //WEBTOKEN LOPPU
+                korttiManager = new QNetworkAccessManager(this);
+                connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(tiliOperaatio(QNetworkReply*)));
+                reply = korttiManager->post(request, QJsonDocument(jsonObj).toJson());
+            }
             if(msgBox.clickedButton()==pButtonNo) {qDebug()<<"Ei";}
         };}
-    on_btnReturn_clicked();
+    //on_btnReturn_clicked();
 }
 
 void KorttiWindow::tilitapahtumatSlot(QNetworkReply *reply)
