@@ -153,7 +153,7 @@ void KorttiWindow::on_btnNostaRahaa_clicked()
 {
     ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Nosto)");
-    if (bluotto) { ui->label_tiliInfo->setText(" Saldo: "+luotto_string+" Tilinumero: "+aTili); }
+    if (bluotto) { ui->label_tiliInfo->setText(" Luottoa jäljellä: "+QString::number(luotto_string.toInt()-saldo_string.toInt())+" Tilinumero: "+aTili); }
     else {ui->label_tiliInfo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
     ui->stackedWidget->setCurrentIndex(3);
     ui->btnReturn->show();
@@ -331,9 +331,9 @@ void KorttiWindow::on_btnXe_clicked()
 {
     bool ok;
     int ii;
-    if(bluotto){QInputDialog::getInt(this,"Nosto","0-"+luotto_string, 1, 1, luotto_string.toInt(), 1, &ok);}
-    else{QInputDialog::getInt(this,"Nosto","0-"+saldo_string, 1, 1, saldo_string.toInt(), 1, &ok);}
-    if (ok){nostoMaaraPaivitys(QString::number(ii));}
+    if(bluotto){ii=QInputDialog::getInt(this,"Nosto","0-"+QString::number(luotto_string.toInt()-saldo_string.toInt()), 0, 0, luotto_string.toInt()-saldo_string.toInt(), 1, &ok);}
+    else{ii=QInputDialog::getInt(this,"Nosto","0-"+saldo_string, 0, 0, saldo_string.toInt(), 1, &ok);}
+    if (ok){if(ii>0){nostoMaaraPaivitys(QString::number(ii));};}
 }
 
 void KorttiWindow::on_btnTyhjenna_clicked()
@@ -349,8 +349,8 @@ void KorttiWindow::on_btnNosta_clicked()
     if(bluotto==false && saldo_string.toInt()-maara.toInt()<0){
         QMessageBox::warning(this,"Varoitus","Tilillä ei ole tarpeeksi rahaa");
     }
-    else if(bluotto && luotto_string.toInt()-maara.toInt()<0){
-        QMessageBox::warning(this,"Varoitus","Tilillä ei ole tarpeeksi katetta");
+    else if(bluotto && saldo_string.toInt()+maara.toInt()>luotto_string.toInt()){
+        QMessageBox::warning(this,"Varoitus","Tilillä ei ole tarpeeksi luottoa");
     }
 
     else{
@@ -416,7 +416,7 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
         msgBox.exec();
         if(bluotto){
             qDebug()<<"luotto paivitys";
-            luotto_string=QString::number(luotto_string.toInt()-maara.toInt());
+            saldo_string=QString::number(saldo_string.toInt()+maara.toInt());
         }
         else{
             qDebug()<<"saldo paivitys";
