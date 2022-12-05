@@ -8,7 +8,7 @@ const tili = {
     return db.query('select concat(asiakas.etunimi," ",asiakas.sukunimi) as "tilin omistaja", asiakas.osoite as "osoite", asiakas.puhnum as "puhnum" from asiakas inner join tili on asiakas.id_asiakas=tili.id_asiakas where id_tilinumero=?', [id], callback);
   },
   checkTilit: function(id, callback) {
-    return db.query('select tili.id_tilinumero, tili.saldo, tili.luottoraja from tili inner join oikeudet on tili.id_tilinumero=oikeudet.id_tilinumero where id_kortti=?', [id], callback);
+    return db.query('select tili.id_tilinumero, tili.saldo, tili.luottoraja from tili inner join oikeudet on tili.id_tilinumero=oikeudet.id_tilinumero where id_kortti=?',[id], callback);
   },
   getTiliInfo: function(id, callback){
     return db.query('select CONCAT(asiakas.etunimi," ", asiakas.sukunimi) as nimi, tili.saldo, tili.luottoraja from asiakas inner join tili on asiakas.id_asiakas=tili.id_asiakas where tili.id_tilinumero=?', [id], callback);

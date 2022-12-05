@@ -59,6 +59,8 @@ private slots:
     void tilitapahtumatSlot (QNetworkReply *reply);
     void saldoSlot (QNetworkReply *reply);
 
+    void on_btnSiirto_clicked();
+
 private:
     Ui::KorttiWindow *ui;
     QByteArray webToken;
