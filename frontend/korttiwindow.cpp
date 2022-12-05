@@ -153,6 +153,8 @@ void KorttiWindow::on_btnSiirraRahaa_clicked()
     ui->labelidkortti->setText(kortti+" (Siirto)");
     ui->stackedWidget->setCurrentIndex(4);
     ui->btnReturn->show();
+    if (bluotto) { ui->label_siirra->setText("Luottoa jäljellä: "+QString::number(luotto_string.toInt()-saldo_string.toInt())); }
+    else {ui->label_siirra->setText("Saldo: "+saldo_string); }
     for(i=0;i<tilinumero.size();i++){
         if(tilinumero[i]==aTili){
             //ei lisätä aktiivista tiliä
