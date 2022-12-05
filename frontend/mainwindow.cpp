@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    kierros = 0;
 }
 
 MainWindow::~MainWindow()
@@ -56,10 +57,26 @@ void MainWindow::loginSlot(QNetworkReply *reply)
         }
         else {
             if(test==0) {
-
+                kierros++;
+                if (kierros == 2) { QMessageBox::warning(this,"Varoitus","Jos syötät pin-koodin vielä kerran väärin, kortti suljetaan!");}
                 ui->lineEditIdKortti->clear();
                 ui->lineEdit_2PinKoodi->clear();
                 ui->labelInfo->setText("Tunnus ja pin-koodi eivät täsmää");
+                if (kierros==3){
+
+                   QMessageBox::warning(this,"Ilmoitus","Kortti suljettu!");
+                   /*  QJsonObject jsonObj;
+                    jsonObj.insert("id_kortti",id_kortti);
+                    QString site_url=MyUrl::getBaseUrl()+"/deleteOikeudet/"+id_kortti;
+                    QNetworkRequest request((site_url));
+                    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+                    loginManager = new QNetworkAccessManager(this);
+                    connect(loginManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(deleted(QNetworkReply*)));
+
+                    reply = loginManager->post(request, QJsonDocument(jsonObj).toJson()); */
+
+                }
 
             }
             else {
@@ -96,3 +113,11 @@ void MainWindow::timeoutSlot()
     ui->lineEdit_2PinKoodi->clear();
     ui->labelInfo->setText("Uloskirjautuminen suoritettu");
 }
+
+/*
+void MainWindow::deleted(QNetworkReply *reply)
+{
+     response_data=reply->readAll();
+    qDebug()<<response_data;
+    qDebug()<<"deleted";
+} */
