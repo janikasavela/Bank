@@ -25,6 +25,7 @@ private slots:
     void on_pushButtonLogin_clicked();
     void loginSlot (QNetworkReply *reply);
     void timeoutSlot(); //uloskirjautuminen
+ //   void deleted (QNetworkReply *reply);
 
 private:
     Ui::MainWindow *ui;
@@ -33,5 +34,6 @@ private:
     QNetworkReply *reply;
     QByteArray response_data;
     QString id_kortti;
+    int kierros;
 };
 #endif // MAINWINDOW_H
