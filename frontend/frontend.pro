@@ -14,16 +14,12 @@ SOURCES += \
     korttiwindow.cpp \
     main.cpp \
     mainwindow.cpp \
-    myurl.cpp \
-    saldo.cpp \
-    tilitapahtumat.cpp
+    myurl.cpp
 
 HEADERS += \
     korttiwindow.h \
     mainwindow.h \
-    myurl.h \
-    saldo.h \
-    tilitapahtumat.h
+    myurl.h
 
 FORMS += \
     korttiwindow.ui \
