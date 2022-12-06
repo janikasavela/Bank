@@ -67,8 +67,11 @@ void MainWindow::loginSlot(QNetworkReply *reply)
                        kierros++;
                        if (kierros == 2) {
                            if (kortit[0] == kortit [1]) { QMessageBox::warning(this,"Varoitus","Jos syötät pin-koodin vielä kerran väärin, kortti suljetaan!");}
-                           else { kortit.clear();
-                                  kierros=0; } }
+                           else {
+                                  QString kortti2 = kortit[1];
+                                  kortit.clear();
+                                  kortit+=kortti2;
+                                  kierros=1; } }
 
                 if (kierros==3){
                     if (kortit[1] == kortit[2]) {
