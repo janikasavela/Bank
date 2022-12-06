@@ -160,7 +160,9 @@ void KorttiWindow::on_btnSiirraRahaa_clicked()
             //ei lisätä aktiivista tiliä
         }
         else{
-            ui->comboSiirtoTili->addItem(tilinumero[i]);
+            if(luotto[i].toInt()>0){ui->comboSiirtoTili->addItem("CREDIT \t"+tilinumero[i]+"\t( - "+QString::number(luotto[i].toInt()-saldo[i].toInt())+"e )",tilinumero[i]);}
+            else{ui->comboSiirtoTili->addItem("DEBIT \t"+tilinumero[i]+"\t( + "+saldo[i]+"e )",tilinumero[i]);}
+
         }
     }
 }
