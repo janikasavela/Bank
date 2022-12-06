@@ -98,7 +98,7 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
     ui->labelidkortti->setText(kortti+" (Tilitapahtumat)");
     ui->stackedWidget->setCurrentIndex(2);
     ui->btnReturn->show();
-
+       qDebug()<<aTili;
        QString site_url=MyUrl::getBaseUrl()+"/selaa_tilitapahtumia/"+aTili;
        QNetworkRequest request((site_url));
        //WEBTOKEN ALKU
@@ -229,7 +229,7 @@ void KorttiWindow::tiliPaivitysSlot(QNetworkReply *reply)
     luotto.clear();
     saldo.clear();
     tilinumero.clear();
-    int i=ui->comboTili->currentIndex();
+    int x=ui->comboTili->currentIndex();
     ui->comboTili->clear();
 
   //siirretään haetut tiedot QStringListiin
@@ -245,11 +245,11 @@ void KorttiWindow::tiliPaivitysSlot(QNetworkReply *reply)
               ui->comboTili->addItem("DEBIT "+QString::number(json_obj["id_tilinumero"].toInt())+" ("+QString::number(json_obj["saldo"].toInt())+")",json_obj["id_tilinumero"].toString());
           }
       }
-      ui->comboTili->setCurrentIndex(i);
-      aTili=tilinumero[i];
-      saldo_string=saldo[i];
-      luotto_string=luotto[i];
-      on_comboTili_activated(i);    //kutsutaan jotta saadaan tarvittavat tilitiedot haettua
+      ui->comboTili->setCurrentIndex(x);
+      aTili=tilinumero[x];
+      saldo_string=saldo[x];
+      luotto_string=luotto[x];
+      on_comboTili_activated(x);    //kutsutaan jotta saadaan tarvittavat tilitiedot haettua
 }
 
 void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehdään valinta
@@ -454,9 +454,9 @@ void KorttiWindow::on_btnSiirto_clicked()
     if(bluotto){ii=QInputDialog::getInt(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(luotto_string.toInt()-saldo_string.toInt()), 0, 0, luotto_string.toInt()-saldo_string.toInt(), 1, &ok);}
     else{
         luottomax=saldo_string.toInt();
-        for(i=0;i<tilinumero.size();i++){
-            if(tilinumero[i]==ui->comboSiirtoTili->currentData() && luotto[i].toInt()>0){
-                luottomax=saldo[i].toInt();
+        for(int x=0;x<tilinumero.size();x++){
+            if(tilinumero[x]==ui->comboSiirtoTili->currentData() && luotto[x].toInt()>0){
+                luottomax=saldo[x].toInt();
                 if(luottomax==0){    //jos luotto on nolla
                     luottomax=-1;
                 }
@@ -473,7 +473,7 @@ void KorttiWindow::on_btnSiirto_clicked()
     if (ok){if(ii>0){
             QMessageBox msgBox;
             msgBox.setText("Siirretään");
-            msgBox.setInformativeText(ui->comboTili->currentText()+"\t-"+QString::number(ii)+"\n VVVVVV\n"+ui->comboSiirtoTili->currentText()+"\t+"+QString::number(ii)+"\n\nOletko Varma?");
+            msgBox.setInformativeText(ui->comboTili->currentText()+"\t-"+QString::number(ii)+"\n\tVVV\n"+ui->comboSiirtoTili->currentText()+"\t+"+QString::number(ii)+"\n\nOletko Varma?");
             QAbstractButton* pButtonYes = msgBox.addButton("Kyllä",QMessageBox::YesRole);
             QAbstractButton* pButtonNo = msgBox.addButton("Ei",QMessageBox::NoRole);
             msgBox.setDefaultButton(QMessageBox::No);
