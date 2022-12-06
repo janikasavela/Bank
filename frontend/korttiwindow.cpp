@@ -421,7 +421,7 @@ void KorttiWindow::on_btnSiirto_clicked()
     if (ok){if(ii>0){
             QMessageBox msgBox;
             msgBox.setText("Siirto");
-            msgBox.setInformativeText("Olet siirtämässä tililtä "+aTili+" tilille "+ui->comboSiirtoTili->currentText()+" yhteensä "+QString::number(ii)+"e.\nOletko Varma?");
+            msgBox.setInformativeText("Olet siirtämässä tililtä\n"+aTili+" ("+saldo_string+"e)\n>>>\ntilille "+ui->comboSiirtoTili->currentText()+" (tokatiliSALDO e) \nyhteensä "+QString::number(ii)+" e.\n\nOletko Varma?");
             //msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
             QAbstractButton* pButtonYes = msgBox.addButton("Kyllä",QMessageBox::YesRole);
             QAbstractButton* pButtonNo = msgBox.addButton("Ei",QMessageBox::NoRole);
