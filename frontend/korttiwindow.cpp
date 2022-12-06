@@ -160,8 +160,8 @@ void KorttiWindow::on_btnSiirraRahaa_clicked()
             //ei lisätä aktiivista tiliä
         }
         else{
-            if(luotto[i].toInt()>0){ui->comboSiirtoTili->addItem("CREDIT \t"+tilinumero[i]+"\t( - "+QString::number(luotto[i].toInt()-saldo[i].toInt())+"e )",tilinumero[i]);}
-            else{ui->comboSiirtoTili->addItem("DEBIT \t"+tilinumero[i]+"\t( + "+saldo[i]+"e )",tilinumero[i]);}
+            if(luotto[i].toInt()>0){ui->comboSiirtoTili->addItem("CREDIT "+tilinumero[i]+"\t( - "+QString::number(luotto[i].toInt()-saldo[i].toInt())+"e )",tilinumero[i]);}
+            else{ui->comboSiirtoTili->addItem("DEBIT "+tilinumero[i]+"\t( + "+saldo[i]+"e )",tilinumero[i]);}
 
         }
     }
@@ -206,6 +206,34 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
       }
       if(tilinumero.size()>1){qDebug()<<"useampi tili löydetty";}
       else{qDebug()<<"yksi tili löydetty";}
+      if(tilinumero.size()==1){
+          ui->comboTili->setDisabled(1);
+          ui->btnSiirraRahaa->setDisabled(1);
+      }
+      on_comboTili_activated(0);    //kutsutaan jotta saadaan tarvittavat tilitiedot haettua
+}
+
+void KorttiWindow::tiliPaivitysSlot(QNetworkReply *reply)
+{
+   //Haetaan kaikki tilit johon kortin haltijalla on oikeus
+
+   QByteArray response_data=reply->readAll();
+   QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
+   QJsonArray json_array = json_doc.array();
+    luotto.clear();
+    saldo.clear();
+    tilinumero.clear();
+    ui->comboTili->clear();
+  //siirretään haetut tiedot QStringListiin
+      foreach (const QJsonValue &value, json_array) {
+          QJsonObject json_obj = value.toObject();
+          luotto+=QString::number(json_obj["luottoraja"].toInt());
+          saldo+=QString::number(json_obj["saldo"].toInt());
+          tilinumero+=QString::number(json_obj["id_tilinumero"].toInt());
+          ui->comboTili->addItem(QString::number(json_obj["id_tilinumero"].toInt()));
+      }
+      //if(tilinumero.size()>1){qDebug()<<"useampi tili löydetty";}
+      //else{qDebug()<<"yksi tili löydetty";}
       if(tilinumero.size()==1){
           ui->comboTili->setDisabled(1);
           ui->btnSiirraRahaa->setDisabled(1);
@@ -339,7 +367,7 @@ void KorttiWindow::on_btnNosta_clicked()
     request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
     //WEBTOKEN LOPPU
     korttiManager = new QNetworkAccessManager(this);
-    connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(tiliOperaatio(QNetworkReply*)));
+    connect(korttiManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(tiliOperaatio(QNetworkReply*)));
     reply = korttiManager->post(request, QJsonDocument(jsonObj).toJson());
     //
     }
@@ -397,7 +425,18 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
         QMessageBox msgBox;
         msgBox.setText("Tilisiirto suoritettu onnistuneesti!");
         msgBox.exec();
-        if(bluotto){
+        //Haetaan kaikki tilit joihin kortin haltijalla on oikeus
+
+        QString site_url=MyUrl::getBaseUrl()+"/tili/checkTilit/"+kortti;
+        QNetworkRequest request((site_url));
+        //WEBTOKEN ALKU
+        request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
+        //WEBTOKEN LOPPU
+        korttiManager = new QNetworkAccessManager(this);
+        connect(korttiManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(tiliPaivitysSlot(QNetworkReply*)));
+        reply = korttiManager->get(request);
+
+        /*if(bluotto){
             qDebug()<<"luotto paivitys";
             saldo_string=QString::number(saldo_string.toInt()+maara.toInt());
         }
@@ -405,7 +444,7 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
             qDebug()<<"saldo paivitys";
             qDebug()<<QString::number(saldo_string.toInt()-maara.toInt());
             saldo_string=QString::number(saldo_string.toInt()-maara.toInt());
-        }
+        }*/
     }
     else{
         QMessageBox::critical(this,"Virhe","Virhe nostoyhteydessä");
@@ -431,11 +470,11 @@ void KorttiWindow::on_btnSiirto_clicked()
             msgBox.exec();
             if(msgBox.clickedButton()==pButtonYes) {qDebug()<<"Kylla";
                 //nosto osuus
-                qDebug()<<kortti+" "+aTili+" "+ui->comboSiirtoTili->currentText();
+                qDebug()<<kortti+" "+aTili+" "+ui->comboSiirtoTili->currentData().toString();
                 QJsonObject jsonObj;
                 jsonObj.insert("id_kortti",kortti);
                 jsonObj.insert("id_miinustili",aTili);
-                jsonObj.insert("id_plustili",ui->comboSiirtoTili->currentText());
+                jsonObj.insert("id_plustili",ui->comboSiirtoTili->currentData().toString());
                 jsonObj.insert("maara",ii);
                 QString site_url=MyUrl::getBaseUrl()+"/tili/siirto/";
                 QNetworkRequest request((site_url));

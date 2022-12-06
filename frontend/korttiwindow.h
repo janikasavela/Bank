@@ -35,6 +35,7 @@ public slots:
 
 private slots:
     void tilitSlot(QNetworkReply *reply);
+    void tiliPaivitysSlot(QNetworkReply *reply);
     void on_comboTili_activated(int index);
     void getOmistajaSlot (QNetworkReply *reply);
     void tiliOperaatio (QNetworkReply *reply);
