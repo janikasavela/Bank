@@ -25,7 +25,7 @@ private slots:
     void on_pushButtonLogin_clicked();
     void loginSlot (QNetworkReply *reply);
     void timeoutSlot(); //uloskirjautuminen
- //   void deleted (QNetworkReply *reply);
+    void deleted (QNetworkReply *reply);
 
 private:
     Ui::MainWindow *ui;

@@ -31,6 +31,7 @@ var loginRouter = require('./routes/login');
 var tilitapahtumatRouter = require('./routes/tilitapahtumat');
 var selaa_tilitapahtumiaRouter = require('./routes/selaa_tilitapahtumia');
 var hae_saldoRouter = require('./routes/hae_saldo');
+var sulje_korttiRouter = require('./routes/sulje_kortti');
 
 var app = express();
 
@@ -41,6 +42,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/login', loginRouter);
+app.use('/sulje_kortti', sulje_korttiRouter);
 app.use(authenticateToken);
 app.use('/kortti', korttiRouter);
 app.use('/asiakas', asiakasRouter);
@@ -49,6 +51,7 @@ app.use('/oikeudet', oikeudetRouter);
 app.use('/tilitapahtumat', tilitapahtumatRouter);
 app.use('/selaa_tilitapahtumia', selaa_tilitapahtumiaRouter);
 app.use('/hae_saldo', hae_saldoRouter);
+
 
 
 module.exports = app;

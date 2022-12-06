@@ -65,16 +65,18 @@ void MainWindow::loginSlot(QNetworkReply *reply)
                 if (kierros==3){
 
                    QMessageBox::warning(this,"Ilmoitus","Kortti suljettu!");
-                   /*  QJsonObject jsonObj;
-                    jsonObj.insert("id_kortti",id_kortti);
-                    QString site_url=MyUrl::getBaseUrl()+"/deleteOikeudet/"+id_kortti;
-                    QNetworkRequest request((site_url));
-                    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
+
+                  QJsonObject jsonObj;
+                    jsonObj.insert("id_kortti",id_kortti);
+                    QString site_url=MyUrl::getBaseUrl()+"/sulje_kortti/"+id_kortti;
+                    QNetworkRequest request((site_url));
+
+                    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
                     loginManager = new QNetworkAccessManager(this);
                     connect(loginManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(deleted(QNetworkReply*)));
 
-                    reply = loginManager->post(request, QJsonDocument(jsonObj).toJson()); */
+                    reply = loginManager->deleteResource(request);
 
                 }
 
@@ -114,10 +116,10 @@ void MainWindow::timeoutSlot()
     ui->labelInfo->setText("Uloskirjautuminen suoritettu");
 }
 
-/*
+
 void MainWindow::deleted(QNetworkReply *reply)
 {
      response_data=reply->readAll();
     qDebug()<<response_data;
     qDebug()<<"deleted";
-} */
+}
