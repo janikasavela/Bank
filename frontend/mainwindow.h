@@ -26,6 +26,7 @@ private slots:
     void loginSlot (QNetworkReply *reply);
     void timeoutSlot(); //uloskirjautuminen
     void deleted (QNetworkReply *reply);
+    void korttiSlot(QNetworkReply *reply);
 
 private:
     Ui::MainWindow *ui;

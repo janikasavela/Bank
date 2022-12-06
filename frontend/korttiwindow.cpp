@@ -193,7 +193,6 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
    QByteArray response_data=reply->readAll();
    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
    QJsonArray json_array = json_doc.array();
-
   //siirretään haetut tiedot QStringListiin
       foreach (const QJsonValue &value, json_array) {
           QJsonObject json_obj = value.toObject();

@@ -105,23 +105,24 @@ void MainWindow::loginSlot(QNetworkReply *reply)
 
                 } }
             else {
+                       kortit.clear();
+                       kierros=0;
+                       objectKorttiWindow = new KorttiWindow(id_kortti); //jos sisäänkirjautuminen ok, luodaan koosteyhteys
+                       objectKorttiWindow->setWebToken("Bearer " + response_data); //lähetetään webtoken korttiwindowille
 
-                objectKorttiWindow = new KorttiWindow(id_kortti); //jos sisäänkirjautuminen ok, luodaan koosteyhteys
-                objectKorttiWindow->setWebToken("Bearer " + response_data); //lähetetään webtoken korttiwindowille
-                objectKorttiWindow->show();
-                connect(objectKorttiWindow,SIGNAL(timeout()),this,SLOT(timeoutSlot()));
+                       connect(objectKorttiWindow,SIGNAL(timeout()),this,SLOT(timeoutSlot()));
 
-                //Haetaan kaikki tilit joihin kortin haltijalla on oikeus
 
-                QString site_url=MyUrl::getBaseUrl()+"/tili/checkTilit/"+id_kortti;
-                QNetworkRequest request((site_url));
-                //WEBTOKEN ALKU
-                request.setRawHeader(QByteArray("Authorization"),(objectKorttiWindow->getWebToken()));
-                //WEBTOKEN LOPPU
-                loginManager = new QNetworkAccessManager(this);
-                connect(loginManager, SIGNAL(finished (QNetworkReply*)), objectKorttiWindow, SLOT(tilitSlot(QNetworkReply*)));
-                reply = loginManager->get(request);
-                this->hide();
+                       QString site_url=MyUrl::getBaseUrl()+"/oikeudet/"+id_kortti;
+                       QNetworkRequest request((site_url));
+                       //WEBTOKEN ALKU
+                       request.setRawHeader(QByteArray("Authorization"),(objectKorttiWindow->getWebToken()));
+                       //WEBTOKEN LOPPU
+                       loginManager = new QNetworkAccessManager(this);
+
+                       connect(loginManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(korttiSlot(QNetworkReply*)));
+
+                       reply = loginManager->get(request);
 
         }
 
@@ -145,4 +146,33 @@ void MainWindow::deleted(QNetworkReply *reply)
      response_data=reply->readAll();
     qDebug()<<response_data;
     qDebug()<<"deleted";
+}
+
+void MainWindow::korttiSlot(QNetworkReply *reply)
+{
+   response_data=reply->readAll();
+   qDebug()<<response_data;
+    reply->deleteLater();
+    loginManager->deleteLater();
+
+    if (response_data != ""){
+
+                  //Haetaan kaikki tilit joihin kortin haltijalla on oikeus
+
+                  QString site_url=MyUrl::getBaseUrl()+"/tili/checkTilit/"+id_kortti;
+                  QNetworkRequest request((site_url));
+                  //WEBTOKEN ALKU
+                  request.setRawHeader(QByteArray("Authorization"),(objectKorttiWindow->getWebToken()));
+                  //WEBTOKEN LOPPU
+                  loginManager = new QNetworkAccessManager(this);
+                  connect(loginManager, SIGNAL(finished (QNetworkReply*)), objectKorttiWindow, SLOT(tilitSlot(QNetworkReply*)));
+                  reply = loginManager->get(request);
+                  this->hide();
+
+                  objectKorttiWindow->show();
+
+    }
+
+    else {QMessageBox::warning(this,"Ilmoitus","Kortti on suljettu!");                                              }
+
 }
