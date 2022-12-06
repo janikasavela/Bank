@@ -14,6 +14,13 @@ KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
     ui->btnReturn->hide();
     max = 10;
     i = 0;
+
+    pQTimer = new QTimer;
+    s=0;
+    max_s=30;
+    connect(pQTimer,SIGNAL(timeout()),
+            this,SLOT(handleTimeout()) );
+
 }
 
 KorttiWindow::~KorttiWindow()
@@ -30,6 +37,34 @@ void KorttiWindow::setWebToken(const QByteArray &newWebToken)
 {
     webToken = newWebToken;
 }
+
+void KorttiWindow::handleTimeout()
+{
+   s++;
+   // qDebug()<<s;
+   if (s == max_s ) {
+       if ( max_s == 10) {
+          max_s=30;
+          s=0;
+          ui->labelidkortti->setText(kortti+" (Valikko)");
+          ui->stackedWidget->setCurrentIndex(0);
+          ui->btnReturn->hide();
+          ui->textTilitapahtumat->clear();
+          ui->textSaldo->clear();
+          if(tilinumero.size()>1){ui->comboTili->setEnabled(true);}
+          ui->comboSiirtoTili->clear();
+          i=0;
+          max=10;
+       }
+     else { emit timeout();
+            this->close();
+            s=0;
+            pQTimer->stop();
+       }
+
+   }
+}
+
 
 void KorttiWindow::tulosta_Tilitapahtumat(QStringList tapahtumat)
 {
@@ -93,6 +128,8 @@ void KorttiWindow::tulosta_saldo(QStringList lista)
     }
 }
 
+
+
 void KorttiWindow::on_btnTilitapahtumat_clicked()
 {   ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Tilitapahtumat)");
@@ -112,6 +149,9 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
 
     ui->btn_uudemmat->setEnabled(false);
     ui->btn_vanhemmat->setEnabled(true);
+
+    s=0;
+    max_s=10;
 }
 
 
@@ -133,6 +173,9 @@ void KorttiWindow::on_btnSaldo_clicked()
 
     reply = korttiManager->get(request);
 
+    s=0;
+    max_s=10;
+
 }
 
 
@@ -144,6 +187,9 @@ void KorttiWindow::on_btnNostaRahaa_clicked()
     else {ui->label_tiliInfo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
     ui->stackedWidget->setCurrentIndex(3);
     ui->btnReturn->show();
+
+    s=0;
+    max_s=10;
 }
 
 
@@ -163,6 +209,9 @@ void KorttiWindow::on_btnSiirraRahaa_clicked()
             ui->comboSiirtoTili->addItem(tilinumero[i]);
         }
     }
+
+    s=0;
+    max_s=10;
 }
 
 

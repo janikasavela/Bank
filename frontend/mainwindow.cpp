@@ -170,6 +170,7 @@ void MainWindow::korttiSlot(QNetworkReply *reply)
                   this->hide();
 
                   objectKorttiWindow->show();
+                  objectKorttiWindow->pQTimer->start(1000);
 
     }
 

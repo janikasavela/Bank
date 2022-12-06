@@ -6,7 +6,7 @@
 #include <QtNetwork>
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
-
+#include <QTimer>
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
