@@ -72,7 +72,7 @@ private:
     QStringList tilinumero, saldo, luotto, uusi_lista, tilin_omistaja_tiedot, tapahtumat;
     QString aTili, tilin_omistaja, saldo_string,omistaja_tiedot,luotto_string, maara, kortin_omistaja;
     bool bluotto;
-    int max, i;
+    int max, i, luottomax;
     QNetworkAccessManager *korttiManager;
 
 };
