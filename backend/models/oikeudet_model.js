@@ -8,7 +8,7 @@ const oikeudet = {
     return db.query('select * from oikeudet', callback);
   },
   deleteOikeudet: function(id, callback) {
-    return db.query('delete from oikeudet where id_kortti=?', [id], callback);
+    return db.query('delete from kortti where id_kortti=?', [id], callback);
   },
   add: function(add_data, callback) {
     return db.query(

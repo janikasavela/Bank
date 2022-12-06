@@ -49,18 +49,6 @@ function(request, response) {
   });
 });
 
-router.delete('/:id', 
-function(request, response) {
-  oikeudet.deleteOikeudet(request.params.id, function(err, dbResult) {
-    if (err) {
-      response.json(err);
-    } else {
-      response.json(dbResult);
-    }
-  });
-});
-
-
 router.put('/:id', 
 function(request, response) {
   oikeudet.update(request.params.id, request.body, function(err, dbResult) {
