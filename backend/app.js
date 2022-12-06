@@ -44,13 +44,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/login', loginRouter);
 app.use('/sulje_kortti', sulje_korttiRouter);
 app.use(authenticateToken);
-app.use('/kortti', korttiRouter);
 app.use('/asiakas', asiakasRouter);
 app.use('/tili', tiliRouter);
-app.use('/oikeudet', oikeudetRouter);
 app.use('/tilitapahtumat', tilitapahtumatRouter);
 app.use('/selaa_tilitapahtumia', selaa_tilitapahtumiaRouter);
 app.use('/hae_saldo', hae_saldoRouter);
+app.use('/kortti', korttiRouter);
+app.use('/oikeudet', oikeudetRouter);
 
 
 
