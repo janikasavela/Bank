@@ -35,5 +35,6 @@ private:
     QByteArray response_data;
     QString id_kortti;
     int kierros;
+    QStringList kortit;
 };
 #endif // MAINWINDOW_H

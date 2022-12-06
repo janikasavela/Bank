@@ -21,7 +21,11 @@ MainWindow::~MainWindow()
 void MainWindow::on_pushButtonLogin_clicked()
 {
     id_kortti=ui->lineEditIdKortti->text();
+    kortit+=ui->lineEditIdKortti->text();
     QString pin_koodi=ui->lineEdit_2PinKoodi->text();
+
+    qDebug()<<id_kortti;
+    qDebug()<<kortit;
 
     QJsonObject jsonObj;
     jsonObj.insert("id_kortti",id_kortti);
@@ -56,18 +60,22 @@ void MainWindow::loginSlot(QNetworkReply *reply)
             ui->labelInfo->setText("Virhe tietokanta yhteydessä");
         }
         else {
-            if(test==0) {
-                kierros++;
-                if (kierros == 2) { QMessageBox::warning(this,"Varoitus","Jos syötät pin-koodin vielä kerran väärin, kortti suljetaan!");}
-                ui->lineEditIdKortti->clear();
-                ui->lineEdit_2PinKoodi->clear();
-                ui->labelInfo->setText("Tunnus ja pin-koodi eivät täsmää");
+                   if(test==0) {
+                       ui->lineEditIdKortti->clear();
+                       ui->lineEdit_2PinKoodi->clear();
+                       ui->labelInfo->setText("Tunnus ja pin-koodi eivät täsmää");
+                       kierros++;
+                       if (kierros == 2) {
+                           if (kortit[0] == kortit [1]) { QMessageBox::warning(this,"Varoitus","Jos syötät pin-koodin vielä kerran väärin, kortti suljetaan!");}
+                           else { kortit.clear();
+                                  kierros=0; } }
+
                 if (kierros==3){
+                    if (kortit[0] == kortit[1] == kortit[2]) {
 
                    QMessageBox::warning(this,"Ilmoitus","Kortti suljettu!");
 
-
-                  QJsonObject jsonObj;
+                    QJsonObject jsonObj;
                     jsonObj.insert("id_kortti",id_kortti);
                     QString site_url=MyUrl::getBaseUrl()+"/sulje_kortti/"+id_kortti;
                     QNetworkRequest request((site_url));
@@ -76,11 +84,12 @@ void MainWindow::loginSlot(QNetworkReply *reply)
                     loginManager = new QNetworkAccessManager(this);
                     connect(loginManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(deleted(QNetworkReply*)));
 
-                    reply = loginManager->deleteResource(request);
+                    reply = loginManager->deleteResource(request); }
 
-                }
+                    else {kortit.clear();
+                          kierros=0;}
 
-            }
+                } }
             else {
 
                 objectKorttiWindow = new KorttiWindow(id_kortti); //jos sisäänkirjautuminen ok, luodaan koosteyhteys
