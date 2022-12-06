@@ -71,8 +71,10 @@ void MainWindow::loginSlot(QNetworkReply *reply)
                                   kierros=0; } }
 
                 if (kierros==3){
-                    if (kortit[0] == kortit[1] == kortit[2]) {
+                    if (kortit[1] == kortit[2]) {
 
+                        kortit.clear();
+                        kierros=0;
                    QMessageBox::warning(this,"Ilmoitus","Kortti suljettu!");
 
                     QJsonObject jsonObj;
@@ -85,6 +87,15 @@ void MainWindow::loginSlot(QNetworkReply *reply)
                     connect(loginManager, SIGNAL(finished (QNetworkReply*)), this, SLOT(deleted(QNetworkReply*)));
 
                     reply = loginManager->deleteResource(request); }
+
+                    else if (kortit[1] != kortit[2]) {
+
+                        QString kortti1=kortit[2];
+                        qDebug()<<kortti1;
+                        kortit.clear();
+                        kortit+=kortti1;
+                        kierros=1;
+                    }
 
                     else {kortit.clear();
                           kierros=0;}
