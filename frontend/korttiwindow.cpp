@@ -177,6 +177,7 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->textSaldo->clear();
     if(tilinumero.size()>1){ui->comboTili->setEnabled(true);}
     ui->comboSiirtoTili->clear();
+    on_btnTyhjenna_clicked();
     i=0;
     max=10;
 }
@@ -202,7 +203,12 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
           luotto+=QString::number(json_obj["luottoraja"].toInt());
           saldo+=QString::number(json_obj["saldo"].toInt());
           tilinumero+=QString::number(json_obj["id_tilinumero"].toInt());
-          ui->comboTili->addItem(QString::number(json_obj["id_tilinumero"].toInt()));
+          if(json_obj["luottoraja"].toInt()>0){
+              ui->comboTili->addItem("CREDIT "+QString::number(json_obj["id_tilinumero"].toInt())+"\t( +"+QString::number(json_obj["luottoraja"].toInt()-json_obj["saldo"].toInt())+"e )",json_obj["id_tilinumero"].toString());
+              }
+              else{
+              ui->comboTili->addItem("DEBIT "+QString::number(json_obj["id_tilinumero"].toInt())+"\t( +"+QString::number(json_obj["saldo"].toInt())+"e )",json_obj["id_tilinumero"].toString());
+          }
       }
       if(tilinumero.size()>1){qDebug()<<"useampi tili löydetty";}
       else{qDebug()<<"yksi tili löydetty";}
@@ -223,39 +229,44 @@ void KorttiWindow::tiliPaivitysSlot(QNetworkReply *reply)
     luotto.clear();
     saldo.clear();
     tilinumero.clear();
+    int i=ui->comboTili->currentIndex();
     ui->comboTili->clear();
+
   //siirretään haetut tiedot QStringListiin
       foreach (const QJsonValue &value, json_array) {
           QJsonObject json_obj = value.toObject();
           luotto+=QString::number(json_obj["luottoraja"].toInt());
           saldo+=QString::number(json_obj["saldo"].toInt());
           tilinumero+=QString::number(json_obj["id_tilinumero"].toInt());
-          ui->comboTili->addItem(QString::number(json_obj["id_tilinumero"].toInt()));
+          if(json_obj["luottoraja"].toInt()>0){
+              ui->comboTili->addItem("CREDIT "+QString::number(json_obj["id_tilinumero"].toInt())+"\t( +"+QString::number(json_obj["luottoraja"].toInt()-json_obj["saldo"].toInt())+"e )",json_obj["id_tilinumero"].toString());
+              }
+              else{
+              ui->comboTili->addItem("DEBIT "+QString::number(json_obj["id_tilinumero"].toInt())+"\t( +"+QString::number(json_obj["saldo"].toInt())+"e )",json_obj["id_tilinumero"].toString());
+          }
       }
-      //if(tilinumero.size()>1){qDebug()<<"useampi tili löydetty";}
-      //else{qDebug()<<"yksi tili löydetty";}
-      if(tilinumero.size()==1){
-          ui->comboTili->setDisabled(1);
-          ui->btnSiirraRahaa->setDisabled(1);
-      }
-      on_comboTili_activated(0);    //kutsutaan jotta saadaan tarvittavat tilitiedot haettua
+      ui->comboTili->setCurrentIndex(i);
+      aTili=tilinumero[i];
+      saldo_string=saldo[i];
+      luotto_string=luotto[i];
+      on_comboTili_activated(i);    //kutsutaan jotta saadaan tarvittavat tilitiedot haettua
 }
 
 void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehdään valinta
 {
     if(tilinumero[index]!=aTili){
-    aTili=ui->comboTili->itemText(index);
+    aTili=tilinumero[index];
     saldo_string=saldo[index];
     luotto_string=luotto[index];
     qDebug()<<"aktiivinen tili: "+aTili;
 
     //Tarkistetaan onko valittu tili Credit vai Debit
     if(luotto[index]=="0"){
-        ui->labelActiveTili->setText("DEBIT Tili:");
+        //ui->labelActiveTili->setText("DEBIT Tili:");
         bluotto=0;
     }
     else{
-        ui->labelActiveTili->setText("CREDIT Tili:");
+       //ui->labelActiveTili->setText("CREDIT Tili:");
         bluotto=1;
     }
 
