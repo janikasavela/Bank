@@ -160,7 +160,7 @@ void KorttiWindow::on_btnSiirraRahaa_clicked()
             //ei lisätä aktiivista tiliä
         }
         else{
-            if(luotto[i].toInt()>0){ui->comboSiirtoTili->addItem("CREDIT "+tilinumero[i]+" ("+QString::number(luotto[i].toDouble()-saldo[i].toDouble(),'f',2)+")",tilinumero[i]);}
+            if(luotto[i].toDouble()>0){ui->comboSiirtoTili->addItem("CREDIT "+tilinumero[i]+" ("+QString::number(luotto[i].toDouble()-saldo[i].toDouble(),'f',2)+")",tilinumero[i]);}
             else{ui->comboSiirtoTili->addItem("DEBIT "+tilinumero[i]+" ("+saldo[i]+")",tilinumero[i]);}
 
         }
@@ -261,7 +261,7 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehd�
     qDebug()<<"aktiivinen tili: "+aTili;
 
     //Tarkistetaan onko valittu tili Credit vai Debit
-    if(luotto[index].toInt()==0){bluotto=0;}
+    if(luotto[index].toDouble()==0){bluotto=0;}
     else{bluotto=1;}
     //
 
@@ -333,7 +333,6 @@ void KorttiWindow::on_btn500e_clicked(){nostoMaaraPaivitys("500");}
 void KorttiWindow::on_btnXe_clicked()
 {
     bool ok;
-    double ii;
     if(bluotto){ii=QInputDialog::getDouble(this,"Nosto","0-"+QString::number(luotto_string.toDouble()-saldo_string.toDouble()), 0, 0, luotto_string.toDouble()-saldo_string.toDouble(), 2, &ok);}
     else{ii=QInputDialog::getDouble(this,"Nosto","0-"+saldo_string, 0, 0, saldo_string.toDouble(), 2, &ok);}
     if (ok){if(ii>0){nostoMaaraPaivitys(QString::number(ii,'f',2));};}
@@ -369,9 +368,7 @@ void KorttiWindow::on_btnNosta_clicked()
     QString site_url=MyUrl::getBaseUrl()+"/tili/nosto/";
     QNetworkRequest request((site_url));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    //WEBTOKEN ALKU
     request.setRawHeader(QByteArray("Authorization"),(this->getWebToken()));
-    //WEBTOKEN LOPPU
     korttiManager = new QNetworkAccessManager(this);
     connect(korttiManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(tiliOperaatio(QNetworkReply*)));
     reply = korttiManager->post(request, QJsonDocument(jsonObj).toJson());
@@ -421,7 +418,7 @@ void KorttiWindow::getOmistajaSlot(QNetworkReply *reply)
 
 }
 
-void KorttiWindow::tiliOperaatio(QNetworkReply *reply)  //Tulevan nosto ja siirtopaketin tarkistaminen
+void KorttiWindow::tiliOperaatio(QNetworkReply *reply)  //Tulevien nosto ja siirtotapahtumien tarkistaminen
 {
     response_data=reply->readAll();
     qDebug()<<response_data;
@@ -429,7 +426,7 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)  //Tulevan nosto ja siirt
     if(QString::compare(response_data,"true")==0){
         on_btnReturn_clicked();
         QMessageBox msgBox;
-        msgBox.setText("Tilisiirto suoritettu onnistuneesti!");
+        msgBox.setText("Tilitapahtuma suoritettu onnistuneesti!");
         msgBox.exec();
         //Haetaan tilitiedot
         QString site_url=MyUrl::getBaseUrl()+"/tili/checkTilit/"+kortti;
@@ -446,24 +443,29 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)  //Tulevan nosto ja siirt
 
 void KorttiWindow::on_btnSiirto_clicked()
 {
-    qDebug()<<"popupikkuna rahamäärälle";
-    qDebug()<<"jonka jälkeen varmistetaan siirto ja palataan alkunäkymään";
     bool ok=false;
-    int ii;
     if(saldo_string.toDouble()-luotto_string.toDouble()!=0){
     if(bluotto){ii=QInputDialog::getDouble(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(luotto_string.toDouble()-saldo_string.toDouble(),'f',2), 0, 0, luotto_string.toDouble()-saldo_string.toDouble(), 2, &ok);}
     else{
         luottomax=saldo_string.toDouble();
+        qDebug()<<luottomax;
         for(int x=0;x<tilinumero.size();x++){
-            if(tilinumero[x]==ui->comboSiirtoTili->currentData() && luotto[x].toInt()>0){
+            qDebug()<<ui->comboSiirtoTili->itemData(x);
+            qDebug()<<ui->comboSiirtoTili->currentData().toInt();
+            qDebug()<<tilinumero[x];
+            qDebug()<<saldo[x];
+            if(tilinumero[x].toInt()==ui->comboSiirtoTili->currentData().toInt() && luotto[x].toDouble()>0){
                 luottomax=saldo[x].toDouble();
                 if(luottomax==0){    //jos luotto on nolla
                     luottomax=-1;
                 }
             }
         }
+        qDebug()<<luottomax;
         if(luottomax>0){
-            ii=QInputDialog::getInt(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(std::min(luottomax,saldo_string.toInt())), 0, 0, std::min(luottomax,saldo_string.toInt()), 1, &ok);
+            ii=QInputDialog::getDouble(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(std::min(luottomax,saldo_string.toDouble())), 0, 0, std::min(luottomax,saldo_string.toDouble()), 2, &ok);
+
+            //ii=QInputDialog::getInt(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(std::min(luottomax,saldo_string.toInt())), 0, 0, std::min(luottomax,saldo_string.toInt()), 1, &ok);
         }
         else{
             QMessageBox::warning(this,"Varoitus","Valitulle tilille ei voida siirtää rahaa\n(luottoraja saavutettu)");
@@ -484,7 +486,7 @@ void KorttiWindow::on_btnSiirto_clicked()
                 jsonObj.insert("id_kortti",kortti);
                 jsonObj.insert("id_miinustili",aTili);
                 jsonObj.insert("id_plustili",ui->comboSiirtoTili->currentData().toString());
-                jsonObj.insert("maara",ii);
+                jsonObj.insert("maara",QString::number(ii,'f',2));
                 QString site_url=MyUrl::getBaseUrl()+"/tili/siirto/";
                 QNetworkRequest request((site_url));
                 request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
