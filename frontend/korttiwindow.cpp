@@ -41,7 +41,7 @@ void KorttiWindow::setWebToken(const QByteArray &newWebToken)
 void KorttiWindow::handleTimeout()
 {
    s++;
-   // qDebug()<<s;
+   qDebug()<<s;
    if (s == max_s ) {
        if ( max_s == 10) {
           max_s=30;
@@ -59,6 +59,7 @@ void KorttiWindow::handleTimeout()
      else { emit timeout();
             this->close();
             s=0;
+            max_s=30;
             pQTimer->stop();
        }
 
@@ -79,13 +80,14 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList tapahtumat)
     else {ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
 
     QString tulostus="";
+    qDebug()<<uusi_lista.length();
 
     if (uusi_lista.length()>0) {
 
     if (uusi_lista.length()>i && uusi_lista.length()>max) {//tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
             for (int x=i; x<max; x++){              //muuten tulee error
                 tulostus+=uusi_lista[x];  } }
-    else if (uusi_lista.length()<10 && uusi_lista.length()>0) {
+    else if (uusi_lista.length()<11 && uusi_lista.length()>0) {
         ui->btn_vanhemmat->setEnabled(false);
         for (int x=0; x<uusi_lista.length(); x++){
                     tulostus+=uusi_lista[x]; } }
@@ -226,6 +228,9 @@ void KorttiWindow::on_btnReturn_clicked()
     ui->comboSiirtoTili->clear();
     i=0;
     max=10;
+    pQTimer->start(1000);
+    s=0;
+    max_s=30;
 }
 
 void KorttiWindow::on_btnLogout_clicked()
@@ -233,6 +238,9 @@ void KorttiWindow::on_btnLogout_clicked()
     qDebug()<<"logout signal";
     emit timeout();
     this->close();
+    pQTimer->stop();
+    s=0;
+    max_s=30;
 }
 
 void KorttiWindow::tilitSlot(QNetworkReply *reply)
@@ -307,6 +315,7 @@ void KorttiWindow::on_btn_uudemmat_clicked() //tilitapahtumian < nuoli
 
 
     ui->textTilitapahtumat->setText(tulostus);
+
 }
 
 void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
@@ -333,22 +342,24 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
    } ui->btn_vanhemmat->setEnabled(false);
     }
     ui->textTilitapahtumat->setText(tulostus);
+    pQTimer->stop();
 }
 
-void KorttiWindow::on_btn20e_clicked(){nostoMaaraPaivitys("20");}
-void KorttiWindow::on_btn40e_clicked(){nostoMaaraPaivitys("40");}
-void KorttiWindow::on_btn60e_clicked(){nostoMaaraPaivitys("60");}
-void KorttiWindow::on_btn100e_clicked(){nostoMaaraPaivitys("100");}
-void KorttiWindow::on_btn200e_clicked(){nostoMaaraPaivitys("200");}
-void KorttiWindow::on_btn500e_clicked(){nostoMaaraPaivitys("500");}
+void KorttiWindow::on_btn20e_clicked(){nostoMaaraPaivitys("20"); pQTimer->stop();}
+void KorttiWindow::on_btn40e_clicked(){nostoMaaraPaivitys("40"); pQTimer->stop();}
+void KorttiWindow::on_btn60e_clicked(){nostoMaaraPaivitys("60"); pQTimer->stop();}
+void KorttiWindow::on_btn100e_clicked(){nostoMaaraPaivitys("100"); pQTimer->stop();}
+void KorttiWindow::on_btn200e_clicked(){nostoMaaraPaivitys("200"); pQTimer->stop();}
+void KorttiWindow::on_btn500e_clicked(){nostoMaaraPaivitys("500"); pQTimer->stop();}
 
 void KorttiWindow::on_btnXe_clicked()
-{
+{   pQTimer->stop();
     bool ok;
     int ii;
     if(bluotto){ii=QInputDialog::getInt(this,"Nosto","0-"+QString::number(luotto_string.toInt()-saldo_string.toInt()), 0, 0, luotto_string.toInt()-saldo_string.toInt(), 1, &ok);}
     else{ii=QInputDialog::getInt(this,"Nosto","0-"+saldo_string, 0, 0, saldo_string.toInt(), 1, &ok);}
     if (ok){if(ii>0){nostoMaaraPaivitys(QString::number(ii));};}
+
 }
 
 void KorttiWindow::on_btnTyhjenna_clicked()
@@ -459,7 +470,7 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)
 }
 
 void KorttiWindow::on_btnSiirto_clicked()
-{
+{   pQTimer->stop(); // timeri pysähtyy kun painaa siirtonappia. en tiiä saako pysähtymään kun combotilisiirtoa painaa?
     qDebug()<<"popupikkuna rahamäärälle";
     qDebug()<<"jonka jälkeen varmistetaan siirto ja palataan alkunäkymään";
     bool ok;
