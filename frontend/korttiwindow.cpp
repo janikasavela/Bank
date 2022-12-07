@@ -40,7 +40,7 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList tapahtumat)
     ui->textTilitapahtumat->setEnabled(false);
     ui->btn_uudemmat->setEnabled(false);
 
-    if (bluotto) { ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Luottoa jäljellä: "+QString::number(luotto_string.toInt()-saldo_string.toInt())+" Tilinumero: "+aTili); }
+    if (bluotto) { ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Luottoa jäljellä: "+QString::number(luotto_string.toDouble()-saldo_string.toDouble(),'f',2)+" Tilinumero: "+aTili); }
     else {ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
 
     QString tulostus="";
@@ -72,7 +72,7 @@ void KorttiWindow::tulosta_saldo(QStringList lista)
     qDebug()<<"tulosta signaali vastaanotettu saldosta";
     qDebug()<<lista.length();
     ui->textSaldo->setEnabled(false);
-    if (bluotto) { ui->label_saldo->setText("Luottoa jäljellä: "+QString::number(luotto_string.toInt()-saldo_string.toInt())+" Tilinumero: "+aTili); }
+    if (bluotto) { ui->label_saldo->setText("Luottoa jäljellä: "+QString::number(luotto_string.toDouble()-saldo_string.toDouble(),'f',2)+" Tilinumero: "+aTili); }
     else {ui->label_saldo->setText("Saldo: "+saldo_string+" Tilinumero: "+aTili); }
 
     QString tapahtumat;
@@ -140,7 +140,7 @@ void KorttiWindow::on_btnNostaRahaa_clicked()
 {
     ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Nosto)");
-    if (bluotto) { ui->label_tiliInfo->setText(" Luottoa jäljellä: "+QString::number(luotto_string.toInt()-saldo_string.toInt())+" Tilinumero: "+aTili); }
+    if (bluotto) { ui->label_tiliInfo->setText(" Luottoa jäljellä: "+QString::number(luotto_string.toDouble()-saldo_string.toDouble())+" Tilinumero: "+aTili); }
     else {ui->label_tiliInfo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
     ui->stackedWidget->setCurrentIndex(3);
     ui->btnReturn->show();
@@ -153,14 +153,14 @@ void KorttiWindow::on_btnSiirraRahaa_clicked()
     ui->labelidkortti->setText(kortti+" (Siirto)");
     ui->stackedWidget->setCurrentIndex(4);
     ui->btnReturn->show();
-    if (bluotto) { ui->label_siirra->setText("Luottoa jäljellä: "+QString::number(luotto_string.toInt()-saldo_string.toInt())); }
+    if (bluotto) { ui->label_siirra->setText("Luottoa jäljellä: "+QString::number(luotto_string.toDouble()-saldo_string.toDouble(),'f',2)); }
     else {ui->label_siirra->setText("Saldo: "+saldo_string); }
     for(i=0;i<tilinumero.size();i++){
         if(tilinumero[i]==aTili){
             //ei lisätä aktiivista tiliä
         }
         else{
-            if(luotto[i].toInt()>0){ui->comboSiirtoTili->addItem("CREDIT "+tilinumero[i]+" ("+QString::number(luotto[i].toInt()-saldo[i].toInt())+")",tilinumero[i]);}
+            if(luotto[i].toInt()>0){ui->comboSiirtoTili->addItem("CREDIT "+tilinumero[i]+" ("+QString::number(luotto[i].toDouble()-saldo[i].toDouble(),'f',2)+")",tilinumero[i]);}
             else{ui->comboSiirtoTili->addItem("DEBIT "+tilinumero[i]+" ("+saldo[i]+")",tilinumero[i]);}
 
         }
@@ -201,13 +201,13 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
       foreach (const QJsonValue &value, json_array) {
           QJsonObject json_obj = value.toObject();
           luotto+=QString::number(json_obj["luottoraja"].toInt());
-          saldo+=QString::number(json_obj["saldo"].toInt());
+          saldo+=QString::number(json_obj["saldo"].toDouble(),'f',2);
           tilinumero+=QString::number(json_obj["id_tilinumero"].toInt());
           if(json_obj["luottoraja"].toInt()>0){
-              ui->comboTili->addItem("CREDIT "+QString::number(json_obj["id_tilinumero"].toInt())+" ("+QString::number(json_obj["luottoraja"].toInt()-json_obj["saldo"].toInt())+")",json_obj["id_tilinumero"].toString());
+              ui->comboTili->addItem("CREDIT "+QString::number(json_obj["id_tilinumero"].toInt())+" ("+QString::number(json_obj["luottoraja"].toDouble()-json_obj["saldo"].toDouble(),'f',2)+")",json_obj["id_tilinumero"].toString());
               }
               else{
-              ui->comboTili->addItem("DEBIT "+QString::number(json_obj["id_tilinumero"].toInt())+" ("+QString::number(json_obj["saldo"].toInt())+")",json_obj["id_tilinumero"].toString());
+              ui->comboTili->addItem("DEBIT "+QString::number(json_obj["id_tilinumero"].toInt())+" ("+QString::number(json_obj["saldo"].toDouble(),'f',2)+")",json_obj["id_tilinumero"].toString());
           }
       }
       if(tilinumero.size()>1){qDebug()<<"useampi tili löydetty";}
@@ -236,13 +236,13 @@ void KorttiWindow::tiliPaivitysSlot(QNetworkReply *reply)
       foreach (const QJsonValue &value, json_array) {
           QJsonObject json_obj = value.toObject();
           luotto+=QString::number(json_obj["luottoraja"].toInt());
-          saldo+=QString::number(json_obj["saldo"].toInt());
+          saldo+=QString::number(json_obj["saldo"].toDouble());
           tilinumero+=QString::number(json_obj["id_tilinumero"].toInt());
           if(json_obj["luottoraja"].toInt()>0){
-              ui->comboTili->addItem("CREDIT "+QString::number(json_obj["id_tilinumero"].toInt())+" ("+QString::number(json_obj["luottoraja"].toInt()-json_obj["saldo"].toInt())+")",json_obj["id_tilinumero"].toString());
+              ui->comboTili->addItem("CREDIT "+QString::number(json_obj["id_tilinumero"].toInt())+" ("+QString::number(json_obj["luottoraja"].toDouble()-json_obj["saldo"].toDouble(),'f',2)+")",json_obj["id_tilinumero"].toString());
               }
               else{
-              ui->comboTili->addItem("DEBIT "+QString::number(json_obj["id_tilinumero"].toInt())+" ("+QString::number(json_obj["saldo"].toInt())+")",json_obj["id_tilinumero"].toString());
+              ui->comboTili->addItem("DEBIT "+QString::number(json_obj["id_tilinumero"].toInt())+" ("+QString::number(json_obj["saldo"].toDouble(),'f',2)+")",json_obj["id_tilinumero"].toString());
           }
       }
       ui->comboTili->setCurrentIndex(x);
@@ -261,7 +261,7 @@ void KorttiWindow::on_comboTili_activated(int index)    //Kun comboboxissa tehd�
     qDebug()<<"aktiivinen tili: "+aTili;
 
     //Tarkistetaan onko valittu tili Credit vai Debit
-    if(luotto[index]=="0"){bluotto=0;}
+    if(luotto[index].toInt()==0){bluotto=0;}
     else{bluotto=1;}
     //
 
@@ -333,10 +333,10 @@ void KorttiWindow::on_btn500e_clicked(){nostoMaaraPaivitys("500");}
 void KorttiWindow::on_btnXe_clicked()
 {
     bool ok;
-    int ii;
-    if(bluotto){ii=QInputDialog::getInt(this,"Nosto","0-"+QString::number(luotto_string.toInt()-saldo_string.toInt()), 0, 0, luotto_string.toInt()-saldo_string.toInt(), 1, &ok);}
-    else{ii=QInputDialog::getInt(this,"Nosto","0-"+saldo_string, 0, 0, saldo_string.toInt(), 1, &ok);}
-    if (ok){if(ii>0){nostoMaaraPaivitys(QString::number(ii));};}
+    double ii;
+    if(bluotto){ii=QInputDialog::getDouble(this,"Nosto","0-"+QString::number(luotto_string.toDouble()-saldo_string.toDouble()), 0, 0, luotto_string.toDouble()-saldo_string.toDouble(), 2, &ok);}
+    else{ii=QInputDialog::getDouble(this,"Nosto","0-"+saldo_string, 0, 0, saldo_string.toDouble(), 2, &ok);}
+    if (ok){if(ii>0){nostoMaaraPaivitys(QString::number(ii,'f',2));};}
 }
 
 void KorttiWindow::on_btnTyhjenna_clicked()
@@ -349,10 +349,10 @@ void KorttiWindow::on_btnTyhjenna_clicked()
 void KorttiWindow::on_btnNosta_clicked()
 {
     maara=ui->lineNostoMaara->text();
-    if(bluotto==false && saldo_string.toInt()-maara.toInt()<0){
+    if(bluotto==false && saldo_string.toDouble()-maara.toDouble()<0){
         QMessageBox::warning(this,"Varoitus","Tilillä ei ole tarpeeksi rahaa");
     }
-    else if(bluotto && saldo_string.toInt()+maara.toInt()>luotto_string.toInt()){
+    else if(bluotto && saldo_string.toDouble()+maara.toDouble()>luotto_string.toDouble()){
         QMessageBox::warning(this,"Varoitus","Tilillä ei ole tarpeeksi luottoa");
     }
 
@@ -365,7 +365,7 @@ void KorttiWindow::on_btnNosta_clicked()
     QJsonObject jsonObj;
     jsonObj.insert("id_kortti",kortti);
     jsonObj.insert("id_tilinumero",aTili);
-    jsonObj.insert("maara",ui->lineNostoMaara->text());
+    jsonObj.insert("maara",maara);
     QString site_url=MyUrl::getBaseUrl()+"/tili/nosto/";
     QNetworkRequest request((site_url));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -450,19 +450,18 @@ void KorttiWindow::on_btnSiirto_clicked()
     qDebug()<<"jonka jälkeen varmistetaan siirto ja palataan alkunäkymään";
     bool ok=false;
     int ii;
-    if(saldo_string.toInt()-luotto_string.toInt()!=0){
-    if(bluotto){ii=QInputDialog::getInt(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(luotto_string.toInt()-saldo_string.toInt()), 0, 0, luotto_string.toInt()-saldo_string.toInt(), 1, &ok);}
+    if(saldo_string.toDouble()-luotto_string.toDouble()!=0){
+    if(bluotto){ii=QInputDialog::getDouble(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(luotto_string.toDouble()-saldo_string.toDouble(),'f',2), 0, 0, luotto_string.toDouble()-saldo_string.toDouble(), 2, &ok);}
     else{
-        luottomax=saldo_string.toInt();
+        luottomax=saldo_string.toDouble();
         for(int x=0;x<tilinumero.size();x++){
             if(tilinumero[x]==ui->comboSiirtoTili->currentData() && luotto[x].toInt()>0){
-                luottomax=saldo[x].toInt();
+                luottomax=saldo[x].toDouble();
                 if(luottomax==0){    //jos luotto on nolla
                     luottomax=-1;
                 }
             }
         }
-        qDebug()<<luotto[ui->comboSiirtoTili->currentIndex()];
         if(luottomax>0){
             ii=QInputDialog::getInt(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(std::min(luottomax,saldo_string.toInt())), 0, 0, std::min(luottomax,saldo_string.toInt()), 1, &ok);
         }
@@ -518,7 +517,7 @@ void KorttiWindow::tilitapahtumatSlot(QNetworkReply *reply)
     //siirretään haetut tiedot muuttujiin
         foreach (const QJsonValue &value, json_array) {
             QJsonObject json_obj = value.toObject();
-            tapahtumat+="Tapahtuma: "+json_obj["tapahtuma"].toString()+" "+"Paiva: "+json_obj["paiva"].toString()+" "+"Aika: "+json_obj["aika"].toString()+" "+"Summa: "+QString::number(json_obj["summa"].toInt())+"\r";
+            tapahtumat+="Tapahtuma: "+json_obj["tapahtuma"].toString()+" "+"Paiva: "+json_obj["paiva"].toString()+" "+"Aika: "+json_obj["aika"].toString()+" "+"Summa: "+QString::number(json_obj["summa"].toDouble(),'f',2)+"\r";
         }
 
         qDebug()<<"\n"<<tapahtumat;
@@ -551,7 +550,7 @@ void KorttiWindow::saldoSlot(QNetworkReply *reply)
     //siirretään haetut tiedot muuttujiin
         foreach (const QJsonValue &value, json_array) {
             QJsonObject json_obj = value.toObject();
-            tapahtumat+="Tapahtuma: "+json_obj["tapahtuma"].toString()+" "+"Paiva: "+json_obj["paiva"].toString()+" "+"Aika: "+json_obj["aika"].toString()+" "+"Summa: "+QString::number(json_obj["summa"].toInt())+"\r";
+            tapahtumat+="Tapahtuma: "+json_obj["tapahtuma"].toString()+" "+"Paiva: "+json_obj["paiva"].toString()+" "+"Aika: "+json_obj["aika"].toString()+" "+"Summa: "+QString::number(json_obj["summa"].toDouble(),'f',2)+"\r";
         }
 
         qDebug()<<"\n"<<tapahtumat;
