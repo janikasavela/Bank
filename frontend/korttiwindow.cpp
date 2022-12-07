@@ -14,6 +14,13 @@ KorttiWindow::KorttiWindow(QString id_kortti, QWidget *parent) :
     ui->btnReturn->hide();
     max = 10;
     i = 0;
+
+    pQTimer = new QTimer;
+    s=0;
+    max_s=30;
+    connect(pQTimer,SIGNAL(timeout()),
+            this,SLOT(handleTimeout()) );
+
 }
 
 KorttiWindow::~KorttiWindow()
@@ -31,6 +38,35 @@ void KorttiWindow::setWebToken(const QByteArray &newWebToken)
     webToken = newWebToken;
 }
 
+void KorttiWindow::handleTimeout()
+{
+   s++;
+   qDebug()<<s;
+   if (s == max_s ) {
+       if ( max_s == 10) {
+          max_s=30;
+          s=0;
+          ui->labelidkortti->setText(kortti+" (Valikko)");
+          ui->stackedWidget->setCurrentIndex(0);
+          ui->btnReturn->hide();
+          ui->textTilitapahtumat->clear();
+          ui->textSaldo->clear();
+          if(tilinumero.size()>1){ui->comboTili->setEnabled(true);}
+          ui->comboSiirtoTili->clear();
+          i=0;
+          max=10;
+       }
+     else { emit timeout();
+            this->close();
+            s=0;
+            max_s=30;
+            pQTimer->stop();
+       }
+
+   }
+}
+
+
 void KorttiWindow::tulosta_Tilitapahtumat(QStringList tapahtumat)
 {
     //tähän slottiin lähetetään kaikki tilitapahtumien tulostustiedot.
@@ -44,13 +80,14 @@ void KorttiWindow::tulosta_Tilitapahtumat(QStringList tapahtumat)
     else {ui->label_tilitapahtumat->setText("Tilin omistaja: "+tilin_omistaja+" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
 
     QString tulostus="";
+    qDebug()<<uusi_lista.length();
 
     if (uusi_lista.length()>0) {
 
     if (uusi_lista.length()>i && uusi_lista.length()>max) {//tarkistetaan että tapahtumia on tarpeeksi jotta voidaan muodostaa uudempien 10 tapahtuman stringi
             for (int x=i; x<max; x++){              //muuten tulee error
                 tulostus+=uusi_lista[x];  } }
-    else if (uusi_lista.length()<10 && uusi_lista.length()>0) {
+    else if (uusi_lista.length()<11 && uusi_lista.length()>0) {
         ui->btn_vanhemmat->setEnabled(false);
         for (int x=0; x<uusi_lista.length(); x++){
                     tulostus+=uusi_lista[x]; } }
@@ -93,6 +130,8 @@ void KorttiWindow::tulosta_saldo(QStringList lista)
     }
 }
 
+
+
 void KorttiWindow::on_btnTilitapahtumat_clicked()
 {   ui->comboTili->setEnabled(false);
     ui->labelidkortti->setText(kortti+" (Tilitapahtumat)");
@@ -112,6 +151,9 @@ void KorttiWindow::on_btnTilitapahtumat_clicked()
 
     ui->btn_uudemmat->setEnabled(false);
     ui->btn_vanhemmat->setEnabled(true);
+
+    s=0;
+    max_s=10;
 }
 
 
@@ -133,6 +175,9 @@ void KorttiWindow::on_btnSaldo_clicked()
 
     reply = korttiManager->get(request);
 
+    s=0;
+    max_s=10;
+
 }
 
 
@@ -144,6 +189,9 @@ void KorttiWindow::on_btnNostaRahaa_clicked()
     else {ui->label_tiliInfo->setText(" Saldo: "+saldo_string+" Tilinumero: "+aTili); }
     ui->stackedWidget->setCurrentIndex(3);
     ui->btnReturn->show();
+
+    s=0;
+    max_s=10;
 }
 
 
@@ -165,6 +213,9 @@ void KorttiWindow::on_btnSiirraRahaa_clicked()
 
         }
     }
+
+    s=0;
+    max_s=10;
 }
 
 
@@ -180,6 +231,9 @@ void KorttiWindow::on_btnReturn_clicked()
     on_btnTyhjenna_clicked();
     i=0;
     max=10;
+    pQTimer->start(1000);
+    s=0;
+    max_s=30;
 }
 
 void KorttiWindow::on_btnLogout_clicked()
@@ -187,6 +241,9 @@ void KorttiWindow::on_btnLogout_clicked()
     qDebug()<<"logout signal";
     emit timeout();
     this->close();
+    pQTimer->stop();
+    s=0;
+    max_s=30;
 }
 
 void KorttiWindow::tilitSlot(QNetworkReply *reply)
@@ -196,7 +253,6 @@ void KorttiWindow::tilitSlot(QNetworkReply *reply)
    QByteArray response_data=reply->readAll();
    QJsonDocument json_doc = QJsonDocument::fromJson(response_data);
    QJsonArray json_array = json_doc.array();
-
   //siirretään haetut tiedot QStringListiin
       foreach (const QJsonValue &value, json_array) {
           QJsonObject json_obj = value.toObject();
@@ -295,6 +351,7 @@ void KorttiWindow::on_btn_uudemmat_clicked() //tilitapahtumian < nuoli
 
 
     ui->textTilitapahtumat->setText(tulostus);
+
 }
 
 void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
@@ -321,17 +378,18 @@ void KorttiWindow::on_btn_vanhemmat_clicked() //tilitapahtumien > nuoli
    } ui->btn_vanhemmat->setEnabled(false);
     }
     ui->textTilitapahtumat->setText(tulostus);
+    pQTimer->stop();
 }
 
-void KorttiWindow::on_btn20e_clicked(){nostoMaaraPaivitys("20");}
-void KorttiWindow::on_btn40e_clicked(){nostoMaaraPaivitys("40");}
-void KorttiWindow::on_btn60e_clicked(){nostoMaaraPaivitys("60");}
-void KorttiWindow::on_btn100e_clicked(){nostoMaaraPaivitys("100");}
-void KorttiWindow::on_btn200e_clicked(){nostoMaaraPaivitys("200");}
-void KorttiWindow::on_btn500e_clicked(){nostoMaaraPaivitys("500");}
+void KorttiWindow::on_btn20e_clicked(){nostoMaaraPaivitys("20"); pQTimer->stop();}
+void KorttiWindow::on_btn40e_clicked(){nostoMaaraPaivitys("40"); pQTimer->stop();}
+void KorttiWindow::on_btn60e_clicked(){nostoMaaraPaivitys("60"); pQTimer->stop();}
+void KorttiWindow::on_btn100e_clicked(){nostoMaaraPaivitys("100"); pQTimer->stop();}
+void KorttiWindow::on_btn200e_clicked(){nostoMaaraPaivitys("200"); pQTimer->stop();}
+void KorttiWindow::on_btn500e_clicked(){nostoMaaraPaivitys("500"); pQTimer->stop();}
 
 void KorttiWindow::on_btnXe_clicked()
-{
+{   pQTimer->stop();
     bool ok;
     if(bluotto){ii=QInputDialog::getDouble(this,"Nosto","0-"+QString::number(luotto_string.toDouble()-saldo_string.toDouble()), 0, 0, luotto_string.toDouble()-saldo_string.toDouble(), 2, &ok);}
     else{ii=QInputDialog::getDouble(this,"Nosto","0-"+saldo_string, 0, 0, saldo_string.toDouble(), 2, &ok);}
@@ -442,7 +500,7 @@ void KorttiWindow::tiliOperaatio(QNetworkReply *reply)  //Tulevien nosto ja siir
 }
 
 void KorttiWindow::on_btnSiirto_clicked()
-{
+{	pQTimer->stop(); // timeri pysähtyy kun painaa siirtonappia. en tiiä saako pysähtymään kun combotilisiirtoa painaa?
     bool ok=false;
     if(saldo_string.toDouble()-luotto_string.toDouble()!=0){
     if(bluotto){ii=QInputDialog::getDouble(this,"Siirto","Paljonko Siirretään?\n0-"+QString::number(luotto_string.toDouble()-saldo_string.toDouble(),'f',2), 0, 0, luotto_string.toDouble()-saldo_string.toDouble(), 2, &ok);}
