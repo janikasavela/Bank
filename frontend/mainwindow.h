@@ -6,7 +6,7 @@
 #include <QtNetwork>
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
-
+#include <QTimer>
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -26,6 +26,7 @@ private slots:
     void loginSlot (QNetworkReply *reply);
     void timeoutSlot(); //uloskirjautuminen
     void deleted (QNetworkReply *reply);
+    void korttiSlot(QNetworkReply *reply);
 
 private:
     Ui::MainWindow *ui;
@@ -35,5 +36,6 @@ private:
     QByteArray response_data;
     QString id_kortti;
     int kierros;
+    QStringList kortit;
 };
 #endif // MAINWINDOW_H

@@ -20,7 +20,7 @@ router.get('/:id?',
             if (err) {
                 response.json(err);
             } else {
-                response.json(dbResult[0]);
+                response.json(dbResult);
             }
         })
     });

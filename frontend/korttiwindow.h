@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QTimer>
 
 namespace Ui {
 class KorttiWindow;
@@ -22,6 +23,7 @@ public:
 
     const QByteArray &getWebToken() const;
     void setWebToken(const QByteArray &newWebToken);
+    QTimer * pQTimer; //esitellään koosteolio QTimer luokkaan
 
 signals:
     void timeout(); //yhdistety uloskirjautumisen slottiin
@@ -32,9 +34,11 @@ signals:
 public slots:
     void tulosta_Tilitapahtumat(QStringList);
     void tulosta_saldo(QStringList);
+    void handleTimeout(); //jäsenfunktio jolla käsitellään QTimerin toimintoa
 
 private slots:
     void tilitSlot(QNetworkReply *reply);
+    void tiliPaivitysSlot(QNetworkReply *reply);
     void on_comboTili_activated(int index);
     void getOmistajaSlot (QNetworkReply *reply);
     void tiliOperaatio (QNetworkReply *reply);
@@ -72,7 +76,10 @@ private:
     QString aTili, tilin_omistaja, saldo_string,omistaja_tiedot,luotto_string, maara, kortin_omistaja;
     bool bluotto;
     int max, i;
+    double ii, luottomax;
     QNetworkAccessManager *korttiManager;
+
+    short s, max_s;
 
 };
 
