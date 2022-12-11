@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 231, 201);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="label">
     <property name="geometry">
@@ -25,8 +28,14 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>23</pointsize>
+      <family>Bahnschrift</family>
+      <pointsize>22</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 22pt &quot;Bahnschrift&quot;;</string>
     </property>
     <property name="text">
      <string>id_kortti</string>
@@ -43,8 +52,14 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>23</pointsize>
+      <family>Bahnschrift</family>
+      <pointsize>22</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 22pt &quot;Bahnschrift&quot;;</string>
     </property>
     <property name="text">
      <string>pin-koodi</string>
@@ -64,6 +79,9 @@
       <pointsize>20</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
+    </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_2PinKoodi">
     <property name="geometry">
@@ -79,6 +97,9 @@
       <pointsize>20</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
+    </property>
    </widget>
    <widget class="QPushButton" name="pushButtonLogin">
     <property name="geometry">
@@ -91,8 +112,16 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>20</pointsize>
+      <family>Bahnschrift</family>
+      <pointsize>22</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(170, 76, 45);
+font: 22pt &quot;Bahnschrift&quot;;
+background-color: rgb(170, 170, 127);</string>
     </property>
     <property name="text">
      <string>Kirjaudu</string>
@@ -109,11 +138,35 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>23</pointsize>
+      <family>Bahnschrift</family>
+      <pointsize>22</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
      </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 22pt &quot;Bahnschrift&quot;;</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>10</y>
+      <width>391</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 700 22pt &quot;Segoe Script&quot;;
+color: rgb(121, 121, 121);
+text-decoration: underline;</string>
+    </property>
+    <property name="text">
+     <string>BankSimul </string>
     </property>
    </widget>
   </widget>
